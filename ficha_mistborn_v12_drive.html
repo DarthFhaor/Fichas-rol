@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#171a20">
+<title>Ficha Cosmere RPG · Mistborn v12 Drive</title>
+<style>
+:root{--bg:#101319;--panel:#1b2029;--panel2:#232a35;--line:#3c4655;--text:#f3f0e8;--muted:#aeb7c5;--gold:#d9b56d;--red:#e16b6b;--green:#63bd8b;--blue:#8cb8f4}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#242a35 0,#101319 55%);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{padding:18px 16px 14px;position:sticky;top:0;z-index:10;background:#151920ee;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}.brand{font-size:12px;letter-spacing:.14em;color:var(--gold);font-weight:800}.sub{color:var(--muted);font-size:12px;margin-top:3px}
+button,.button{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:10px;padding:9px 12px;font:inherit;cursor:pointer}button:active{transform:scale(.98)}button.gold{background:var(--gold);color:#1c1b18;border-color:var(--gold);font-weight:800}button.danger{color:#ffb6b6}
+nav{display:flex;gap:7px;overflow:auto;padding:12px 14px 0;scrollbar-width:none}nav button{white-space:nowrap;border-radius:999px;padding:8px 13px;color:var(--muted)}nav button.active{background:var(--gold);color:#171717;border-color:var(--gold);font-weight:800}
+main{max-width:900px;margin:auto;padding:14px 14px 100px}.page{display:none}.page.active{display:block}
+.card{background:linear-gradient(145deg,#202630,#191e26);border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:13px;box-shadow:0 8px 24px #0002}
+h1{font-size:24px;margin:0 0 2px}h2{font-size:16px;margin:0 0 13px;color:var(--gold);letter-spacing:.04em}h3{font-size:13px;margin:0 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+label{display:block;font-size:12px;color:var(--muted);margin:0 0 5px}input,textarea,select{width:100%;background:#11151b;border:1px solid var(--line);color:var(--text);border-radius:9px;padding:10px;font:inherit;min-width:0}textarea{resize:vertical;min-height:78px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.field{min-width:0}.resource{border:1px solid var(--line);border-radius:13px;padding:12px;background:#11151b}.resource .num{font-size:26px;font-weight:850;text-align:center;font-variant-numeric:tabular-nums}.resource .max{font-size:12px;color:var(--muted)}.counter{display:flex;align-items:center;gap:8px;margin-top:9px}.counter button{flex:1;font-size:18px;padding:5px}.bar{height:6px;background:#39404c;border-radius:9px;overflow:hidden;margin-top:7px}.bar span{height:100%;display:block;background:var(--green);width:100%;transition:width .15s}.resource.hp .bar span{background:var(--red)}.resource.focus .bar span{background:var(--blue)}
+.stat{background:#11151b;border:1px solid var(--line);padding:9px;border-radius:11px;text-align:center}.stat input{text-align:center;font-size:21px;font-weight:800;padding:6px}.stat label{text-align:center}
+.skillrow{display:grid;grid-template-columns:minmax(0,1fr) 70px 90px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #343b46}.skillrow:last-child{border:0}.skillrow .skillname{font-size:14px}.skillrow input{text-align:center;padding:7px}.skillrow select{padding:7px;font-size:12px}
+.portrait-layout{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:15px;align-items:start}
+.portrait{border:1px dashed var(--line);border-radius:13px;overflow:hidden;background:#11151b;aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;color:var(--muted);text-align:center}
+.portrait img{width:100%;height:100%;object-fit:cover;display:block}.portrait img[hidden]{display:none}.portrait-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.portrait-actions label{margin:0;cursor:pointer}
+.skilldots{grid-column:1/-1;display:flex;align-items:center;gap:10px;flex-wrap:wrap}.skilldots .dots{display:flex;gap:10px}.dot{width:28px;height:28px;border:2px solid var(--gold);border-radius:50%;padding:0;background:transparent;flex:none;box-shadow:inset 0 0 0 2px #141820}.dot.filled{background:var(--gold)}.dot:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+@media(max-width:480px){.portrait-layout{grid-template-columns:1fr}.portrait-panel{max-width:250px;margin:auto;width:100%}}
+ .journal-card{border:1px solid var(--line);background:linear-gradient(145deg,#202630,#191e26);border-radius:16px;padding:15px;margin-bottom:13px}.journal-meta{display:grid;grid-template-columns:1fr 170px;gap:10px}.journal-images{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin:12px 0}.journal-photo{position:relative;background:#11151b;border-radius:10px;overflow:hidden;border:1px solid var(--line)}.journal-photo img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}.journal-photo button{width:100%;border-radius:0;font-size:12px}.journal-notes{min-height:145px}.journal-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.journal-actions label{cursor:pointer;margin:0}.eng{color:var(--muted);font-size:12px}@media(max-width:480px){.journal-meta{grid-template-columns:1fr}}
+.editor-wrap{margin:5px 0 13px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#11151b}.editor-toolbar{display:flex;gap:4px;flex-wrap:wrap;padding:6px;border-bottom:1px solid var(--line);background:#252d38}.editor-toolbar button{padding:4px 8px;font-size:12px}.rich-editor{min-height:105px;padding:12px;outline:none;overflow-wrap:anywhere}.rich-editor:focus{box-shadow:inset 0 0 0 1px var(--gold)}.rich-editor h3{font-size:16px;text-transform:none;color:var(--gold)}.rich-editor h4{color:var(--gold)}.rich-editor p{margin:8px 0}.rich-editor ul,.rich-editor ol{padding-left:25px}.goal-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}.goal-row .dots{display:flex;gap:6px}.goal-row .dot{width:24px;height:24px}.goal-row button.danger{padding:6px}.label-edit{outline:1px dashed var(--gold);border-radius:3px;cursor:text}.card a.button{display:inline-flex;text-decoration:none;align-items:center}@media(max-width:480px){.goal-row{grid-template-columns:1fr auto}.goal-row input{grid-column:1/-1}}.listitem{border:1px solid var(--line);border-radius:10px;padding:10px;margin:8px 0;background:#11151b}.listitem textarea{min-height:52px}.listitem .remove{margin-top:8px}
+.actions{display:flex;flex-wrap:wrap;gap:8px}.hint{font-size:12px;color:var(--muted)}.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:3px 8px;color:var(--muted);font-size:11px}
+footer{position:fixed;bottom:0;left:0;right:0;background:#151920ee;backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:9px 14px calc(9px + env(safe-area-inset-bottom));display:flex;gap:8px;justify-content:center;z-index:10}footer button{flex:1;max-width:220px}
+@media(min-width:650px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.layout2{display:grid;grid-template-columns:1fr 1fr;gap:13px}.layout2 .card{margin-bottom:0}}
+@media(max-width:390px){.grid.four{grid-template-columns:repeat(2,minmax(0,1fr))}.skillrow{grid-template-columns:minmax(0,1fr) 56px 78px}.resource .num{font-size:23px}}
+
+/* Visor de imágenes: retrato, diario y referencias */
+#portraitImg:not([hidden]),.journal-photo img{cursor:zoom-in}
+#portraitImg:focus-visible,.journal-photo img:focus-visible{outline:3px solid var(--gold);outline-offset:-3px}
+.image-viewer[hidden]{display:none!important}
+.image-viewer{position:fixed;inset:0;z-index:1000;background:rgba(5,7,12,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:64px 16px 72px}
+.image-viewer img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;transition:transform .15s ease;transform:scale(var(--viewer-zoom,1));transform-origin:center;user-select:none}
+.image-viewer-stage{min-height:0;min-width:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:auto}
+.image-viewer-toolbar{position:absolute;top:12px;right:12px;display:flex;align-items:center;gap:8px;z-index:2}
+.image-viewer-toolbar button,.image-viewer-nav button{background:#262e3a;border:1px solid #647086;color:#fff;font-size:17px}
+.image-viewer-nav{position:absolute;bottom:15px;display:flex;gap:10px;align-items:center;justify-content:center}
+.image-viewer-counter{font-size:13px;color:#e4dfd3;min-width:65px;text-align:center}
+.image-viewer-nav[hidden]{display:none}
+body.viewer-open{overflow:hidden}
+
+/* Adjuntos PDF de las reglas */
+.pdf-list{display:grid;gap:8px;margin:12px 0}
+.pdf-item{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:9px;background:#11151b;border:1px solid var(--line);border-radius:10px}
+.pdf-item .pdf-name{flex:1;min-width:135px;overflow-wrap:anywhere;font-size:13px}
+.pdf-item button{font-size:12px}
+.pdf-viewer[hidden]{display:none!important}
+.pdf-viewer{position:fixed;inset:0;z-index:1100;background:#080b10ed;display:flex;flex-direction:column;gap:10px;padding:12px}
+.pdf-viewer-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pdf-viewer-head strong{flex:1;min-width:0;overflow-wrap:anywhere}
+.pdf-viewer iframe{flex:1;width:100%;min-height:0;background:white;border:1px solid var(--line);border-radius:8px}
+.collapse-head{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:10px}.collapse-head h2{margin:0;flex:1;min-width:0}.collapse-head button{white-space:nowrap;border-color:var(--gold);color:var(--gold);font-size:13px}.collapse-content[hidden]{display:none!important}.collapse-summary{color:var(--muted);font-size:12px;margin-top:3px}.rule-header{display:flex;gap:10px;align-items:center;margin-bottom:10px}.rule-header input{flex:1}.rule-header button{white-space:nowrap;border-color:var(--gold);color:var(--gold);font-size:13px}@media(max-width:480px){.rule-header{flex-wrap:wrap}.rule-header input{flex-basis:100%}}
+
+/* Mover personajes entre apartados */
+.character-drag-handle{cursor:grab;touch-action:none;user-select:none;border-color:var(--line)!important;color:var(--muted)!important;padding:7px 9px!important}
+.character-drag-handle:active{cursor:grabbing}
+.character-card.dragging{opacity:.42}
+.character-group.drag-over{outline:2px dashed var(--gold);outline-offset:3px;background:#2c3027}
+.character-move-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:9px 0 12px}
+.character-move-line select{width:auto;flex:1;min-width:120px}
+.character-move-line label{margin:0}
+.character-drop-hint{color:var(--muted);font-size:12px;margin:8px 0 0}
+@media(max-width:480px){.character-drag-handle{padding:6px!important}}
+/* Directorio de personajes */
+.character-controls{margin:14px 0}.character-search-line{display:flex;gap:8px}.character-search-line input{flex:1}.character-group{margin-bottom:14px}.character-group-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.character-group-head input{flex:1;min-width:150px;font-size:17px;color:var(--gold);font-weight:750}.character-group-head .hint{width:100%;margin:0}.character-card{border:1px solid var(--line);border-radius:12px;background:#11151b;margin:10px 0;overflow:hidden}.character-head{display:flex;align-items:center;gap:12px;padding:9px}.character-thumb{width:62px;height:70px;flex:0 0 62px;border:1px solid var(--line);border-radius:9px;object-fit:cover;background:#252d38;cursor:zoom-in}.character-thumb-empty{display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:25px;cursor:default}.character-head-info{flex:1;min-width:0}.character-head-info strong{display:block;overflow-wrap:anywhere}.character-body{padding:10px 12px 14px;border-top:1px solid var(--line)}.character-body[hidden]{display:none!important}.character-photo{display:block;width:min(100%,230px);max-height:300px;object-fit:contain;background:#101319;border:1px solid var(--line);border-radius:10px;margin:0 0 10px;cursor:zoom-in}.character-body .editor-wrap{margin-top:5px}.character-empty{font-size:13px;color:var(--muted);padding:10px}.character-head button{white-space:nowrap;border-color:var(--gold);color:var(--gold)}@media(max-width:480px){.character-head{gap:8px}.character-thumb{width:48px;height:56px;flex-basis:48px}.character-head button{padding:7px 8px;font-size:12px}}
+</style>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+<header><div class="top"><div><div class="brand">COSMERE · MISTBORN RPG</div><div class="sub">Ficha interactiva · guardado local y Drive opcional</div></div><button id="saveStatus" class="pill" type="button">✓ Guardado</button></div></header>
+<nav id="tabs">
+<button class="active" data-page="principal">Principal</button><button data-page="habilidades">Habilidades</button><button data-page="combate">Combate y equipo</button><button data-page="talentos">Talentos</button><button data-page="historia">Historia y notas</button><button data-page="diario">Diario</button><button data-page="personajes">Personajes</button><button data-page="reglas">Reglas</button><button data-page="copias">Copias</button>
+</nav>
+<main>
+<section class="page active" id="principal">
+<div class="card"><div class="portrait-layout"><div class="grid">
+<div class="field"><label>Nombre del personaje</label><input data-key="name" value="Fhaorn't"></div>
+<div class="field"><label>Jugador</label><input data-key="player" value="Alejandro"></div>
+<div class="field"><label>Nivel</label><input data-key="level" type="number" value="1"></div>
+<div class="field"><label>Ascendencia</label><input data-key="ancestry" value="Humano"></div>
+<div class="field"><label>Linaje / cultura</label><input data-key="culture" value="Skaa"></div>
+<div class="field"><label>Senderos</label><input data-key="paths" value="Líder (1), Brazo de Peltre (1)"></div>
+<div class="field" style="grid-column:1/-1"><label>Especialidades</label><textarea data-key="expertise">Vida pública
+Estratega</textarea></div>
+</div><div class="portrait-panel"><h2>Imagen del personaje</h2><div class="portrait" id="portraitBox"><span id="portraitEmpty">Sin imagen</span><img id="portraitImg" alt="Retrato del personaje" hidden></div><div class="portrait-actions"><label class="button">Subir imagen<input id="portraitFile" type="file" accept="image/*" hidden></label><button id="removePortrait" type="button">Quitar</button></div><p class="hint">Se guarda con la ficha y en las copias JSON. Mejor usar una imagen de tamaño moderado.</p></div></div></div>
+<div class="card"><h2>Recursos</h2><div class="grid three">
+<div class="resource hp"><label>Vida / Health (actual / máxima)</label><div class="num"><span id="hpNow">18</span><span class="max"> / <span id="hpMaxText">18</span></span></div><div class="bar"><span id="hpBar"></span></div><div class="counter"><button data-counter="hp" data-delta="-1">−1</button><button data-counter="hp" data-delta="1">+1</button></div><div class="field" style="margin-top:8px"><label>Vida máxima</label><input data-key="hpMax" type="number" value="18"></div></div>
+<div class="resource focus"><label>Foco / Focus (actual / máximo)</label><div class="num"><span id="focusNow">6</span><span class="max"> / <span id="focusMaxText">6</span></span></div><div class="bar"><span id="focusBar"></span></div><div class="counter"><button data-counter="focus" data-delta="-1">−</button><button data-counter="focus" data-delta="1">+</button></div><div class="field" style="margin-top:8px"><label>Foco máximo</label><input data-key="focusMax" type="number" value="6"></div></div>
+<div class="resource"><label>Investidura / Investiture (actual / máximo)</label><div class="num"><span id="invNow">4</span><span class="max"> / <span id="invMaxText">4</span></span></div><div class="bar"><span id="invBar"></span></div><div class="counter"><button data-counter="inv" data-delta="-1">−</button><button data-counter="inv" data-delta="1">+</button></div><div class="field" style="margin-top:8px"><label>Investidura máxima</label><input data-key="invMax" type="number" value="4"></div></div>
+</div></div>
+<div class="card"><h2>Atributos y defensas / Attributes & Defenses</h2><div class="grid three" id="stats"></div><p class="hint">Edita los valores directamente. Las defensas se pueden ajustar manualmente si cambian las reglas o el equipo.</p></div>
+<div class="card"><h2>Datos derivados</h2><div class="grid three">
+<div class="field"><label>Desvío / Deflect</label><input data-key="deflect" type="number" value="2"></div><div class="field"><label>Capacidad de carga / Lifting Capacity</label><input data-key="lifting" value="250 lbs"></div><div class="field"><label>Movimiento / Movement</label><input data-key="movement" value="30 ft"></div><div class="field"><label>Dado de recuperación / Recovery die</label><input data-key="recovery" value="1d8"></div><div class="field"><label>Alcance de sentidos / Senses range</label><input data-key="senses" value="10 ft"></div></div></div>
+</section>
+<section class="page" id="habilidades">
+<div class="card"><h2>Habilidades / Skills</h2><p class="hint">Modifica el valor numérico y marca hasta cinco círculos de competencia de forma independiente, como en la hoja física. Los nombres y valores iniciales se han transcrito de las fotografías; revísalos por si alguna cifra manuscrita no se lee bien.</p><div id="skills"></div><button class="gold" id="addSkill">＋ Añadir habilidad</button></div>
+</section>
+<section class="page" id="combate">
+<div class="layout2"><div class="card"><h2>Armas</h2><div id="weapons"></div><button class="gold" id="addWeapon">＋ Añadir arma</button></div>
+<div class="card"><h2>Armadura y equipo</h2><textarea data-key="equipment">Coraza (Presentable, F15)</textarea><label style="margin-top:12px">Condiciones y heridas</label><textarea data-key="conditions" placeholder="Anota condiciones, heridas o efectos activos…"></textarea><label style="margin-top:12px">Cargas / consumibles</label><textarea data-key="items" placeholder="Objetos, cantidades y recursos…"></textarea></div></div>
+</section>
+<section class="page" id="talentos">
+<div class="card"><h2>Talentos</h2><p class="hint">Un bloque por talento. Puedes editar, añadir o borrar entradas.</p><div id="talents"></div><button class="gold" id="addTalent">＋ Añadir talento</button></div>
+</section>
+<section class="page" id="historia">
+<div class="card"><h2>Propósito, obstáculo y objetivos</h2><label>Propósito</label><textarea data-key="purpose">Formar un grupo militar</textarea><label>Obstáculo</label><textarea data-key="obstacle">Caos político actual</textarea><h3 style="margin-top:16px">Objetivos</h3><div id="goalEntries"></div><button id="addGoal" class="gold" type="button">＋ Añadir objetivo</button></div>
+<div class="card"><h2>Notas</h2><textarea data-key="notes">Veterano</textarea><label style="margin-top:12px">Conexiones</label><textarea data-key="connections" placeholder="Personas, grupos, contactos…"></textarea><label style="margin-top:12px">Historia / detalles</label><textarea data-key="backstory" placeholder="Escribe aquí el trasfondo del personaje…"></textarea></div>
+</section>
+<section class="page" id="diario">
+<div class="card"><h2>Diario de campaña</h2><p class="hint">Crea una entrada por sesión, añade tus notas y adjunta imágenes a cada entrada. Todo se guarda en este navegador y se incluye en las copias JSON.</p><button id="addJournal" class="gold" type="button">＋ Nueva sesión</button></div>
+<div id="journalEntries"></div>
+</section>
+<section class="page" id="personajes">
+<div class="card"><h2>Personajes de la aventura</h2><p class="hint">Organiza a tus compañeros y a los personajes que vayas conociendo. Pulsa las imágenes para ampliarlas; pliega las fichas para ver solo el retrato y el nombre. Arrastra una ficha por el control ↕ hasta otro apartado o usa «Mover a» dentro de la ficha.</p>
+<div class="character-controls"><label for="characterSearch">Buscar por nombre o notas</label><div class="character-search-line"><input id="characterSearch" type="search" placeholder="Ej.: Luthadel, mercader, amigo..." autocomplete="off"><button id="clearCharacterSearch" type="button">Limpiar</button></div><p class="hint" id="characterSearchStatus" aria-live="polite"></p></div>
+<button id="addCharacterGroup" class="gold" type="button">＋ Añadir apartado</button><div class="actions" style="margin-top:12px"><button id="exportCharacters" type="button">Exportar solo personajes</button><label class="button" style="cursor:pointer;margin:0">Importar personajes<input id="importCharacters" type="file" accept=".json,application/json" hidden></label></div><p class="hint" id="charactersTransferMsg" aria-live="polite">Al importar se añaden personajes y apartados sin borrar los que ya tengas.</p></div>
+<div id="characterGroups"></div>
+</section>
+<section class="page" id="reglas">
+<div class="card"><h2>Reglas y referencias del manual</h2><p class="hint">Guarda reglas, aclaraciones y extractos breves para consultar durante las partidas. Añade texto con formato, fotografías y archivos PDF de las secciones del manual. Para PDF grandes, conviene dividirlos en secciones pequeñas y exportar copias de seguridad.</p><button id="addRule" class="gold" type="button">＋ Añadir apartado</button></div><div id="ruleEntries"></div>
+</section>
+<section class="page" id="copias">
+<div class="card"><h2>Perfiles de fichas</h2><p class="hint">Cada perfil es una ficha independiente en este navegador. Puedes cambiar entre ellos, crear otros nuevos o duplicar la ficha actual. Exporta copias JSON periódicamente para conservarlas fuera del navegador.</p><div class="grid" style="align-items:end"><div class="field"><label for="profileSelect">Ficha activa</label><select id="profileSelect"></select></div><div class="field"><label for="profileName">Nombre del perfil</label><input id="profileName" placeholder="Nombre de esta ficha"></div></div><div class="actions" style="margin-top:10px"><button id="newProfile" class="gold" type="button">＋ Nueva ficha</button><button id="duplicateProfile" type="button">Duplicar ficha</button><button id="renameProfile" type="button">Renombrar</button><button id="deleteProfile" class="danger" type="button">Eliminar perfil</button></div><p class="hint" id="profilesMsg" aria-live="polite"></p></div>
+<div class="card"><h2>Copias de seguridad</h2><p class="hint">Importar, exportar y restaurar están separados del resto de la ficha para evitar acciones accidentales. Los cambios se guardan automáticamente en este navegador. Exporta copias periódicas, especialmente si adjuntas imágenes.</p><div class="actions"><button id="exportBtn" class="gold">Exportar ficha</button><label class="button" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer">Importar ficha<input id="importFile" type="file" accept=".json,application/json" hidden></label><button id="resetBtn" class="danger">Restaurar valores iniciales</button></div><p class="hint" id="backupMsg" aria-live="polite"></p></div>
+<div class="card"><h2>Edición general</h2><p class="hint">Activa este modo para renombrar títulos y etiquetas de los apartados directamente desde sus pestañas. Los valores y la información del personaje siguen siendo editables normalmente.</p><button id="editModeBtn" type="button">Activar edición de títulos</button><p id="editModeMsg" class="hint"></p></div>
+<div class="card"><h2>Sincronización con Google Drive (v12)</h2>
+<p class="hint">Después de configurarlo una sola vez, el navegador leerá y guardará tus perfiles en un archivo privado de Drive. Conserva tus copias JSON manuales por seguridad. Se necesita abrir esta ficha desde una web HTTPS; no funciona la conexión a Google desde un archivo local file://.</p>
+<div class="field"><label for="driveClientId">ID de cliente OAuth de Google (aplicación web)</label><input id="driveClientId" type="text" placeholder="123456789-xxxx.apps.googleusercontent.com" autocomplete="off"></div>
+<div class="actions" style="margin-top:10px"><button id="driveConnect" class="gold" type="button">Conectar Google Drive</button><button id="driveSync" type="button">Sincronizar ahora</button><button id="driveDisconnect" type="button">Desconectar</button><a class="button" href="https://drive.google.com/drive/my-drive" target="_blank" rel="noopener noreferrer">Abrir Drive ↗</a></div>
+<p id="driveState" class="hint" role="status" aria-live="polite">Sin conexión a Drive. Tus datos se siguen guardando en este navegador.</p>
+<p class="hint">Se crea un único archivo «mistborn-perfiles-sync-v12.json» para todos los perfiles. En un nuevo dispositivo, usa el mismo ID de cliente y la misma cuenta Google. Si los dos dispositivos modifican la ficha al mismo tiempo, la sincronización se detiene para evitar una sobrescritura inadvertida.</p>
+</div>
+
+</section>
+</main>
+<footer><button id="quickDamage">−1 Vida</button><button id="quickHeal" class="gold">＋1 Vida</button><button id="fullRestore">Recuperar recursos</button></footer>
+<div id="imageViewer" class="image-viewer" role="dialog" aria-modal="true" aria-label="Visualización de imagen" hidden>
+  <div class="image-viewer-toolbar"><button id="viewerZoom" type="button" title="Ampliar o ajustar imagen">Ampliar +</button><button id="viewerClose" type="button" title="Cerrar imagen" aria-label="Cerrar imagen">✕ Cerrar</button></div>
+  <div class="image-viewer-stage" id="viewerStage"><img id="viewerImage" alt="Imagen ampliada"></div>
+  <div class="image-viewer-nav" id="viewerNav" hidden><button id="viewerPrev" type="button" aria-label="Imagen anterior">← Anterior</button><span class="image-viewer-counter" id="viewerCounter"></span><button id="viewerNext" type="button" aria-label="Imagen siguiente">Siguiente →</button></div>
+</div>
+
+<div id="pdfViewer" class="pdf-viewer" role="dialog" aria-modal="true" aria-label="Documento PDF" hidden>
+  <div class="pdf-viewer-head"><strong id="pdfViewerName">Documento PDF</strong><button id="pdfOpenTab" type="button">Abrir en otra pestaña ↗</button><button id="pdfClose" type="button">✕ Cerrar</button></div>
+  <iframe id="pdfFrame" title="Visor de documento PDF"></iframe>
+</div>
+<script>
+const KEY='cosmere-mistborn-sheet-v1';
+const defaults={
+name:"Fhaorn't",player:"Alejandro",level:"1",ancestry:"Humano",culture:"Skaa",paths:"Líder (1), Brazo de Pelitre (1)",
+portrait:"",journal:[],rules:[],characterGroups:[{id:"cg-allies",name:"Equipo / aliados",characters:[]},{id:"cg-others",name:"Otros personajes",characters:[]}],objectiveItems:[],richText:{},customLabels:{},hp:"18",hpMax:"18",focus:"6",focusMax:"6",inv:"4",invMax:"4",deflect:"2",lifting:"250 lbs",movement:"30 ft",recovery:"1d8",senses:"10 ft",
+stats:[["Fuerza","3"],["Defensa física","16"],["Velocidad","3"],["Intelecto","1"],["Defensa cognitiva","14"],["Voluntad","3"],["Percepción / consciencia","2"],["Defensa espiritual","12"],["Presencia","0"]],
+skills:[["Agilidad","3","SPD",0],["Atletismo","3","STR",0],["Armas pesadas","3","STR",0],["Armas ligeras","4","SPD",1],["Sigilo","3","SPD",2],["Latrocinio","3","SPD",0],["Artesanía","1","INT",0],["Deducción","1","INT",0],["Disciplina","3","WIL",0],["Intimidación","4","WIL",1],["Saberes","1","INT",0],["Medicina","1","INT",0],["Alomancia","4","WIL",1],["Engaño","0","PRE",0],["Perspicacia","2","AWA",0],["Liderazgo","0","PRE",0],["Percepción","1","AWA",0],["Persuasión","0","PRE",0],["Supervivencia","2","AWA",1]],
+weapons:[{name:"Bastón de duelo ×2",damage:"1d8 + 4",notes:"Discreto, único"},{name:"Escudo de madera",damage:"1d4 + 4",notes:"Asegurar"}],
+talents:[{name:"Quema peltre",detail:"1 ronda\nMejora velocidad y fuerza\nSi estás agotado, ignora la penalización."},{name:"Beber vial (1)",detail:"Recuperas Investidura\nElimina estado de agotamiento (revisar texto exacto del talento). "},{name:"Llamado pasivo",detail:"1d4"}],
+equipment:"Coraza (Presentable, F15)",conditions:"",items:"",expertise:"Vida pública\nEstratega",purpose:"Formar un grupo militar",obstacle:"Caos político actual",goal1:"Entrenar sucesor",goals:"",notes:"Veterano",connections:"",backstory:""
+};
+// Perfiles independientes. La primera apertura migra automáticamente la ficha anterior.
+const PROFILE_KEY='cosmere-mistborn-profiles-v11';
+const ACTIVE_KEY='cosmere-mistborn-active-profile-v11';
+let profiles=[];let activeProfileId='';let data=structuredClone(defaults);
+function profileId(){return 'p-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9)}
+try{
+ const stored=JSON.parse(localStorage.getItem(PROFILE_KEY)||'null');
+ if(Array.isArray(stored)&&stored.length){profiles=stored.filter(p=>p&&typeof p.id==='string'&&p.sheet&&typeof p.sheet==='object');}
+ if(!profiles.length){let previous=JSON.parse(localStorage.getItem(KEY)||'null');const sheet=previous&&typeof previous==='object'&&!Array.isArray(previous)?{...structuredClone(defaults),...previous}:structuredClone(defaults);profiles=[{id:profileId(),name:sheet.name||'Ficha principal',sheet}];}
+ activeProfileId=localStorage.getItem(ACTIVE_KEY)||profiles[0].id;
+ if(!profiles.some(p=>p.id===activeProfileId))activeProfileId=profiles[0].id;
+ data={...structuredClone(defaults),...structuredClone(profiles.find(p=>p.id===activeProfileId).sheet)};
+}catch(e){profiles=[{id:profileId(),name:'Ficha principal',sheet:structuredClone(defaults)}];activeProfileId=profiles[0].id;}
+
+const $=s=>document.querySelector(s);
+function escapeHTML(t){return String(t??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function plainToHTML(t){return escapeHTML(t).replace(/\n/g,'<br>')}
+function cleanRich(raw){const doc=new DOMParser().parseFromString('<div>'+String(raw||'')+'</div>','text/html');const allowed=new Set(['B','STRONG','I','EM','U','BR','P','DIV','H3','H4','UL','OL','LI','BLOCKQUOTE']);function clean(node){if(node.nodeType===3)return document.createTextNode(node.textContent);if(node.nodeType!==1)return document.createTextNode('');const tag=node.tagName;const out=allowed.has(tag)?document.createElement(tag.toLowerCase()):document.createDocumentFragment();for(const child of [...node.childNodes])out.append(clean(child));return out}const holder=document.createElement('div');for(const node of [...doc.body.firstElementChild.childNodes])holder.append(clean(node));return holder.innerHTML}
+function richEditor(value,onchange){const wrapper=document.createElement('div');wrapper.className='editor-wrap';const toolbar=document.createElement('div');toolbar.className='editor-toolbar';const edit=document.createElement('div');edit.className='rich-editor';edit.contentEditable='true';edit.setAttribute('role','textbox');edit.setAttribute('aria-multiline','true');edit.innerHTML=cleanRich(value);[['B','Negrita','bold'],['I','Cursiva','italic'],['U','Subrayado','underline'],['• Lista','Lista','insertUnorderedList'],['1. Lista','Lista numerada','insertOrderedList'],['Subtítulo','Subtítulo','formatBlock:H3'],['Párrafo','Párrafo','formatBlock:P']].forEach(([text,title,command])=>{const b=document.createElement('button');b.type='button';b.textContent=text;b.title=title;b.onmousedown=e=>e.preventDefault();b.onclick=()=>{edit.focus();if(command.startsWith('formatBlock:'))document.execCommand('formatBlock',false,command.split(':')[1]);else document.execCommand(command,false,null);onchange(cleanRich(edit.innerHTML))};toolbar.append(b)});edit.oninput=()=>onchange(cleanRich(edit.innerHTML));edit.addEventListener('paste',e=>{e.preventDefault();document.execCommand('insertText',false,e.clipboardData.getData('text/plain'))});wrapper.append(toolbar,edit);return wrapper}
+function upgradeStaticEditors(){if(!data.richText||typeof data.richText!=='object')data.richText={};document.querySelectorAll('textarea[data-key]').forEach(el=>{const key=el.dataset.key;if(el.dataset.upgraded)return;const value=Object.hasOwn(data.richText,key)?data.richText[key]:plainToHTML(data[key]||'');const rich=richEditor(value,v=>{data.richText[key]=v;data[key]=richToText(v);persist()});el.dataset.upgraded='1';el.style.display='none';el.after(rich)})}
+function richToText(html){const d=document.createElement('div');d.innerHTML=cleanRich(html);return d.textContent||''}
+function addRich(obj,field,initial){const value=obj['rich_'+field]??plainToHTML(obj[field]??'');return richEditor(value,v=>{obj['rich_'+field]=v;obj[field]=richToText(v);persist()})}
+
+const statEnglish={'Fuerza':'Strength','Defensa física':'Physical Defense','Velocidad':'Speed','Intelecto':'Intellect','Defensa cognitiva':'Cognitive Defense','Voluntad':'Willpower','Percepción / consciencia':'Awareness','Defensa espiritual':'Spiritual Defense','Presencia':'Presence'};
+const skillEnglish={'Agilidad':'Agility','Atletismo':'Athletics','Armas pesadas':'Heavy Weaponry','Armas ligeras':'Light Weaponry','Sigilo':'Stealth','Latrocinio':'Thievery','Artesanía':'Crafting','Deducción':'Deduction','Disciplina':'Discipline','Intimidación':'Intimidation','Saberes':'Lore','Medicina':'Medicine','Alomancia':'Allomancy','Engaño':'Deception','Perspicacia':'Insight','Liderazgo':'Leadership','Percepción':'Perception','Persuasión':'Persuasion','Supervivencia':'Survival'};
+function bilingual(name,map){return name+(map[name]?' / '+map[name]:'')}
+
+function persist(){try{const current=profiles.find(p=>p.id===activeProfileId);if(current)current.sheet=structuredClone(data);localStorage.setItem(PROFILE_KEY,JSON.stringify(profiles));localStorage.setItem(ACTIVE_KEY,activeProfileId);$('#saveStatus').textContent='✓ Guardado';$('#backupMsg').textContent='Cambios guardados en este navegador.'; if(window.mistbornCloudChanged)window.mistbornCloudChanged();}catch(e){$('#saveStatus').textContent='No guardado';$('#backupMsg').textContent='No se pudo guardar automáticamente. Exporta una copia.'}}
+function bindFields(){document.querySelectorAll('[data-key]').forEach(el=>{const k=el.dataset.key;if(el.tagName==='TEXTAREA'&&el.dataset.upgraded){el.nextElementSibling?.remove();el.dataset.upgraded='';el.style.display='';}if(data[k]!==undefined)el.value=data[k];el.oninput=()=>{data[k]=el.value;if(['hpMax','focusMax','invMax'].includes(k))renderResources();persist()}})}
+function renderPortrait(){const img=$('#portraitImg'),empty=$('#portraitEmpty');if(data.portrait){img.src=data.portrait;img.hidden=false;empty.hidden=true}else{img.removeAttribute('src');img.hidden=true;empty.hidden=false}}
+$('#portraitFile').onchange=async e=>{const file=e.target.files[0];if(!file)return;if(!file.type.startsWith('image/')){alert('Elige una imagen válida.');return}try{const image=await createImageBitmap(file);const c=document.createElement('canvas');const scale=Math.min(1,900/image.width,1200/image.height);c.width=Math.max(1,Math.round(image.width*scale));c.height=Math.max(1,Math.round(image.height*scale));c.getContext('2d').drawImage(image,0,0,c.width,c.height);image.close();data.portrait=c.toDataURL('image/jpeg',.78);renderPortrait();persist()}catch(err){alert('No se ha podido cargar esta imagen. Prueba con una imagen JPG o PNG.')}e.target.value=''};
+$('#removePortrait').onclick=()=>{data.portrait='';renderPortrait();persist()};
+function renderStats(){const box=$('#stats');box.innerHTML='';data.stats.forEach((s,i)=>{const d=document.createElement('div');d.className='stat';d.innerHTML=`<label></label><input type="number" inputmode="numeric">`;d.querySelector('label').textContent=bilingual(s[0],statEnglish);d.querySelector('input').value=s[1];d.querySelector('input').addEventListener('input',e=>{data.stats[i][1]=e.target.value;persist()});box.append(d)})}
+function renderResources(){[['hp','hpMax','hpNow','hpMaxText','hpBar'],['focus','focusMax','focusNow','focusMaxText','focusBar'],['inv','invMax','invNow','invMaxText','invBar']].forEach(([k,m,n,mt,b])=>{let max=Math.max(0,Number(data[m]??0)),cur=Math.max(0,Math.min(max,Number(data[k]??0)));data[k]=String(cur);$('#'+n).textContent=cur;$('#'+mt).textContent=max;$('#'+b).style.width=(max?cur/max*100:0)+'%'})}
+function renderSkills(){const box=$('#skills');box.innerHTML='';data.skills.forEach((s,i)=>{const row=document.createElement('div');row.className='skillrow';row.innerHTML='<div class="skillname"></div><input type="number" inputmode="numeric" aria-label="Valor / Value"><select aria-label="Atributo / Attribute"><option>SPD</option><option>STR</option><option>INT</option><option>WIL</option><option>AWA</option><option>PRE</option></select>';row.querySelector('.skillname').textContent=bilingual(s[0],skillEnglish);row.querySelector('input').value=s[1];row.querySelector('select').value=s[2];row.querySelector('input').addEventListener('input',e=>{data.skills[i][1]=e.target.value;persist()});row.querySelector('select').addEventListener('change',e=>{data.skills[i][2]=e.target.value;persist()});
+const progress=document.createElement('div');progress.className='skilldots';const title=document.createElement('span');title.className='hint';title.textContent='Competencia / Proficiency';const dots=document.createElement('div');dots.className='dots';const count=Math.max(0,Math.min(5,Number(s[3])||0));for(let j=1;j<=5;j++){const dot=document.createElement('button');dot.type='button';dot.className='dot'+(j<=count?' filled':'');dot.setAttribute('aria-label',s[0]+': '+j+' de 5');dot.setAttribute('aria-pressed',String(j<=count));dot.onclick=()=>{data.skills[i][3]=j===Number(data.skills[i][3])?j-1:j;renderSkills();persist()};dots.append(dot)}progress.append(title,dots);row.append(progress);box.append(row)})}
+function renderList(key,id,fields){const box=$(id);box.innerHTML='';data[key].forEach((obj,i)=>{const item=document.createElement('div');item.className='listitem';fields.forEach(([f,label,area])=>{const l=document.createElement('label');l.textContent=label;if(area){item.append(l,addRich(obj,f))}else{const el=document.createElement('input');el.value=obj[f]||'';el.addEventListener('input',()=>{data[key][i][f]=el.value;persist()});item.append(l,el)}});const b=document.createElement('button');b.className='remove danger';b.textContent='Eliminar';b.onclick=()=>{data[key].splice(i,1);renderList(key,id,fields);persist()};item.append(b);box.append(item)})}
+// Cada entrada del diario incluye notas y una colección de imágenes comprimidas.
+function makeJournalEntry(){return {id:'j'+Date.now()+'-'+Math.random().toString(36).slice(2,7),title:'Nueva sesión',date:new Date().toISOString().slice(0,10),notes:'',images:[]}}
+function renderJournal(){const area=$('#journalEntries');area.replaceChildren();if(!Array.isArray(data.journal))data.journal=[];data.journal.forEach((entry,i)=>{if(!Array.isArray(entry.images))entry.images=[];
+const card=document.createElement('article');card.className='journal-card';const h=document.createElement('h2');h.textContent='Sesión '+(data.journal.length-i)+'';card.append(h);
+const meta=document.createElement('div');meta.className='journal-meta';
+const titleWrap=document.createElement('div');const titleLabel=document.createElement('label');titleLabel.textContent='Título';const titleInput=document.createElement('input');titleInput.value=entry.title||'';titleInput.oninput=()=>{entry.title=titleInput.value;persist()};titleWrap.append(titleLabel,titleInput);
+const dateWrap=document.createElement('div');const dateLabel=document.createElement('label');dateLabel.textContent='Fecha';const dateInput=document.createElement('input');dateInput.type='date';dateInput.value=entry.date||'';dateInput.oninput=()=>{entry.date=dateInput.value;persist()};dateWrap.append(dateLabel,dateInput);meta.append(titleWrap,dateWrap);card.append(meta);
+const nl=document.createElement('label');nl.textContent='Crónica, acontecimientos y notas';nl.style.marginTop='12px';const notes=addRich(entry,'notes');card.append(nl,notes);
+const gallery=document.createElement('div');gallery.className='journal-images';entry.images.forEach((src,j)=>{const fig=document.createElement('div');fig.className='journal-photo';const img=document.createElement('img');img.src=src;img.alt='Imagen '+(j+1)+' de la sesión';img.loading='lazy';img.tabIndex=0;img.title='Pulsar para ver en grande';const del=document.createElement('button');del.type='button';del.textContent='Quitar imagen';del.onclick=()=>{if(confirm('¿Quitar esta imagen del diario?')){entry.images.splice(j,1);renderJournal();persist()}};fig.append(img,del);gallery.append(fig)});card.append(gallery);
+const act=document.createElement('div');act.className='journal-actions';const upload=document.createElement('label');upload.className='button';upload.textContent='＋ Imágenes';const file=document.createElement('input');file.type='file';file.accept='image/*';file.multiple=true;file.hidden=true;file.onchange=async()=>{const files=[...file.files];for(const f of files){try{const compressed=await compressJournalImage(f);entry.images.push(compressed)}catch(e){alert('No se pudo añadir '+f.name+'. Utiliza JPG, PNG o WebP.')}}renderJournal();persist()};upload.append(file);const remove=document.createElement('button');remove.className='danger';remove.textContent='Eliminar sesión';remove.onclick=()=>{if(confirm('¿Eliminar esta sesión y sus imágenes?')){data.journal.splice(i,1);renderJournal();persist()}};act.append(upload,remove);card.append(act);
+const content=document.createElement('div');content.className='collapse-content';
+while(h.nextSibling)content.append(h.nextSibling);
+const head=document.createElement('div');head.className='collapse-head';
+const headText=document.createElement('div');headText.style.flex='1';headText.style.minWidth='0';headText.append(h);
+const summary=document.createElement('div');summary.className='collapse-summary';
+const updateSummary=()=>{summary.textContent=[entry.title||'Sin título',entry.date||''].filter(Boolean).join(' · ')};
+updateSummary();titleInput.addEventListener('input',updateSummary);dateInput.addEventListener('input',updateSummary);
+headText.append(summary);
+const toggle=document.createElement('button');toggle.type='button';
+const updateCollapsed=()=>{content.hidden=!!entry.collapsed;toggle.textContent=entry.collapsed?'▸ Mostrar':'▾ Ocultar';toggle.setAttribute('aria-expanded',String(!entry.collapsed))};
+toggle.onclick=()=>{entry.collapsed=!entry.collapsed;updateCollapsed();persist()};
+head.append(headText,toggle);card.append(head,content);updateCollapsed();area.append(card)})}
+async function compressJournalImage(file){if(!file.type.startsWith('image/'))throw Error('Not image');const bmp=await createImageBitmap(file);const scale=Math.min(1,1100/bmp.width,1100/bmp.height);const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(bmp.width*scale));canvas.height=Math.max(1,Math.round(bmp.height*scale));canvas.getContext('2d').drawImage(bmp,0,0,canvas.width,canvas.height);bmp.close();return canvas.toDataURL('image/jpeg',.70)}
+$('#addJournal').onclick=()=>{data.journal.unshift(makeJournalEntry());renderJournal();persist()};
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===b.dataset.page));window.scrollTo({top:0,behavior:'smooth'})}));
+document.addEventListener('click',e=>{const b=e.target.closest('[data-counter]');if(!b)return;const k=b.dataset.counter,maxKey={hp:'hpMax',focus:'focusMax',inv:'invMax'}[k];data[k]=String(Math.max(0,Math.min(Number(data[maxKey]||0),Number(data[k]||0)+Number(b.dataset.delta))));renderResources();persist()});
+$('#quickDamage').onclick=()=>{data.hp=String(Math.max(0,Number(data.hp)-1));renderResources();persist()};
+$('#quickHeal').onclick=()=>{data.hp=String(Math.min(Number(data.hpMax),Number(data.hp)+1));renderResources();persist()};
+$('#fullRestore').onclick=()=>{data.hp=data.hpMax;data.focus=data.focusMax;data.inv=data.invMax;renderResources();persist()};
+$('#addSkill').onclick=()=>{data.skills.push(['Nueva habilidad','0','STR',0]);renderSkills();persist()};
+$('#addWeapon').onclick=()=>{data.weapons.push({name:'Nueva arma',damage:'',notes:''});renderList('weapons','#weapons',[['name','Nombre'],['damage','Daño / Damage'],['notes','Notas',true]]);persist()};
+$('#addTalent').onclick=()=>{data.talents.push({name:'Nuevo talento',detail:''});renderList('talents','#talents',[['name','Nombre'],['detail','Efectos / notas',true]]);persist()};
+$('#exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=(data.name||'personaje').replace(/[^a-z0-9-_]/gi,'_')+'-mistborn.json';a.click();URL.revokeObjectURL(url);$('#backupMsg').textContent='Copia exportada. Guárdala para restaurarla cuando quieras.'};
+$('#importFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const obj=JSON.parse(await f.text());if(!obj||typeof obj!=='object'||Array.isArray(obj)||!Array.isArray(obj.skills))throw Error('Invalid sheet');if(!confirm('¿Importar esta ficha y sustituir los datos actuales?'))return;data={...structuredClone(defaults),...obj};init();persist();$('#backupMsg').textContent='Ficha importada correctamente.'}catch(err){alert('No se ha podido leer el archivo. Comprueba que sea una copia JSON válida.')}e.target.value=''};
+$('#resetBtn').onclick=()=>{if(confirm('¿Restaurar todos los datos iniciales? Si no has exportado una copia, perderás los cambios actuales.')){data=structuredClone(defaults);init();persist()}};
+
+function renderGoals(){const box=$('#goalEntries');box.replaceChildren();if(!Array.isArray(data.objectiveItems))data.objectiveItems=[];if(!data.goalsMigrated && !data.objectiveItems.length && (data.goal1||data.goals)){data.objectiveItems=[...(data.goal1?[{text:data.goal1,points:0}]:[]),...(data.goals||'').split('\n').filter(Boolean).map(text=>({text,points:0}))];data.goalsMigrated=true};data.objectiveItems.forEach((g,i)=>{const row=document.createElement('div');row.className='goal-row';const input=document.createElement('input');input.value=g.text||'';input.placeholder='Describe tu objetivo';input.oninput=()=>{g.text=input.value;persist()};const points=document.createElement('div');points.className='dots';for(let n=1;n<=3;n++){const b=document.createElement('button');b.type='button';b.className='dot'+(n<=(g.points||0)?' filled':'');b.title=n+' de 3';b.onclick=()=>{g.points=g.points===n?n-1:n;renderGoals();persist()};points.append(b)}const del=document.createElement('button');del.type='button';del.textContent='Eliminar';del.className='danger';del.onclick=()=>{if(confirm('¿Eliminar este objetivo?')){data.objectiveItems.splice(i,1);renderGoals();persist()}};row.append(input,points,del);box.append(row)})}
+$('#addGoal').onclick=()=>{data.objectiveItems.push({text:'',points:0});renderGoals();persist()};
+function readPDFData(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(Error('No se pudo leer el PDF'));r.readAsDataURL(file)})}
+let pdfURL=null;
+function closePDFViewer(){const viewer=$('#pdfViewer');viewer.hidden=true;$('#pdfFrame').removeAttribute('src');document.body.classList.remove('viewer-open');if(pdfURL){URL.revokeObjectURL(pdfURL);pdfURL=null}}
+function openPDFViewer(attachment){try{closePDFViewer();const encoded=String(attachment.data||'').split(',')[1];if(!encoded)throw Error('PDF vacío');const bin=atob(encoded);const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);pdfURL=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));$('#pdfViewerName').textContent=attachment.name||'Documento PDF';$('#pdfFrame').src=pdfURL;$('#pdfViewer').hidden=false;document.body.classList.add('viewer-open');$('#pdfClose').focus()}catch(e){alert('No se ha podido abrir este PDF.') }}
+$('#pdfClose').onclick=closePDFViewer;
+$('#pdfOpenTab').onclick=()=>{if(pdfURL)window.open(pdfURL,'_blank','noopener')};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#pdfViewer').hidden){e.stopImmediatePropagation();closePDFViewer()}},true);
+function renderRules(){const box=$('#ruleEntries');box.replaceChildren();if(!Array.isArray(data.rules))data.rules=[];data.rules.forEach((rule,i)=>{
+if(!Array.isArray(rule.images))rule.images=[];
+if(!Array.isArray(rule.pdfs))rule.pdfs=[];
+const card=document.createElement('div');card.className='journal-card';const title=document.createElement('input');title.value=rule.title||'';title.placeholder='Título del apartado (p. ej., Combate)';title.oninput=()=>{rule.title=title.value;persist()};
+const lab=document.createElement('label');lab.textContent='Texto del manual y notas';const editor=addRich(rule,'notes');card.append(title,lab,editor);
+const gallery=document.createElement('div');gallery.className='journal-images';rule.images.forEach((src,j)=>{const fig=document.createElement('div');fig.className='journal-photo';const img=document.createElement('img');img.src=src;img.loading='lazy';img.alt='Referencia visual del manual';img.tabIndex=0;img.title='Pulsar para ver en grande';const del=document.createElement('button');del.textContent='Quitar imagen';del.onclick=()=>{if(confirm('¿Quitar imagen?')){rule.images.splice(j,1);renderRules();persist()}};fig.append(img,del);gallery.append(fig)});card.append(gallery);
+const pdfList=document.createElement('div');pdfList.className='pdf-list';rule.pdfs.forEach((pdf,j)=>{const row=document.createElement('div');row.className='pdf-item';const name=document.createElement('span');name.className='pdf-name';name.textContent='📄 '+(pdf.name||'Documento PDF')+' · '+(pdf.size? (pdf.size/1024/1024).toFixed(2)+' MB':'PDF');const open=document.createElement('button');open.type='button';open.textContent='Ver PDF';open.onclick=()=>openPDFViewer(pdf);const del=document.createElement('button');del.type='button';del.className='danger';del.textContent='Quitar';del.onclick=()=>{if(confirm('¿Eliminar este PDF del apartado?')){rule.pdfs.splice(j,1);renderRules();persist()}};row.append(name,open,del);pdfList.append(row)});card.append(pdfList);
+const actions=document.createElement('div');actions.className='journal-actions';const upload=document.createElement('label');upload.className='button';upload.textContent='＋ Añadir imágenes';const file=document.createElement('input');file.type='file';file.accept='image/*';file.multiple=true;file.hidden=true;file.onchange=async()=>{for(const f of [...file.files])try{rule.images.push(await compressJournalImage(f))}catch(e){alert('No se pudo cargar '+f.name)}renderRules();persist()};upload.append(file);
+const pdfUpload=document.createElement('label');pdfUpload.className='button';pdfUpload.textContent='＋ Añadir PDF';const pdfFile=document.createElement('input');pdfFile.type='file';pdfFile.accept='.pdf,application/pdf';pdfFile.multiple=true;pdfFile.hidden=true;pdfFile.onchange=async()=>{for(const f of [...pdfFile.files]){if(!(/\.pdf$/i.test(f.name)||f.type==='application/pdf')){alert('Selecciona un PDF válido: '+f.name);continue}if(f.size>3*1024*1024){alert('El PDF '+f.name+' supera los 3 MB. Divide el archivo en secciones más pequeñas para poder guardarlo en la ficha.');continue}try{const encoded=await readPDFData(f);const item={name:f.name,size:f.size,data:encoded};rule.pdfs.push(item);try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){rule.pdfs.pop();alert('No hay suficiente espacio en el navegador para guardar '+f.name+'. Exporta una copia JSON y utiliza PDFs más pequeños.')}}catch(e){alert('No se pudo cargar '+f.name)}}renderRules();persist()};pdfUpload.append(pdfFile);
+const remove=document.createElement('button');remove.className='danger';remove.textContent='Eliminar apartado';remove.onclick=()=>{if(confirm('¿Eliminar el apartado, sus imágenes y sus PDF?')){data.rules.splice(i,1);renderRules();persist()}};
+actions.append(upload,pdfUpload,remove);card.append(actions);
+const content=document.createElement('div');content.className='collapse-content';
+while(title.nextSibling)content.append(title.nextSibling);
+const head=document.createElement('div');head.className='rule-header';
+const toggle=document.createElement('button');toggle.type='button';
+const updateCollapsed=()=>{content.hidden=!!rule.collapsed;toggle.textContent=rule.collapsed?'▸ Mostrar':'▾ Ocultar';toggle.setAttribute('aria-expanded',String(!rule.collapsed))};
+toggle.onclick=()=>{rule.collapsed=!rule.collapsed;updateCollapsed();persist()};
+head.append(title,toggle);card.append(head,content);updateCollapsed();box.append(card)})}
+$('#addRule').onclick=()=>{data.rules.push({title:'',notes:'',images:[],pdfs:[]});renderRules();persist()};
+let generalEdit=false;
+function setupEditableLabels(){if(!data.customLabels)data.customLabels={};document.querySelectorAll('main section').forEach(section=>{const labels=section.querySelectorAll('h2,h3,label:not(.button)');labels.forEach((el,index)=>{if(el.closest('.journal-card,.listitem,.goal-row,.editor-wrap'))return;const key=section.id+':'+index;el.dataset.labelKey=key;const saved=data.customLabels[key];if(saved!=null)el.textContent=saved;el.contentEditable=generalEdit?'true':'false';el.classList.toggle('label-edit',generalEdit);el.oninput=()=>{if(generalEdit){data.customLabels[key]=el.textContent;persist()}}})})}
+$('#editModeBtn').onclick=()=>{generalEdit=!generalEdit;setupEditableLabels();$('#editModeBtn').textContent=generalEdit?'Finalizar edición de títulos':'Activar edición de títulos';$('#editModeMsg').textContent=generalEdit?'Ahora puedes pulsar títulos y etiquetas para renombrarlos; vuelve a Copias para finalizar.':'Edición general desactivada.'};
+
+
+
+// Visor en pantalla completa sin alterar los archivos ni las copias guardadas.
+let viewerImages=[],viewerIndex=0,viewerZoomed=false,viewerReturnFocus=null;
+function showViewerImage(){
+  const image=$('#viewerImage');image.src=viewerImages[viewerIndex];image.alt='Imagen ampliada '+(viewerIndex+1);
+  viewerZoomed=false;$('#imageViewer').style.setProperty('--viewer-zoom','1');$('#viewerZoom').textContent='Ampliar +';
+  $('#viewerNav').hidden=viewerImages.length<2;
+  $('#viewerCounter').textContent=(viewerIndex+1)+' / '+viewerImages.length;
+}
+function openImageViewer(images,index=0){
+  viewerImages=images.filter(Boolean);if(!viewerImages.length)return;
+  viewerIndex=Math.max(0,Math.min(index,viewerImages.length-1));viewerReturnFocus=document.activeElement;
+  showViewerImage();$('#imageViewer').hidden=false;document.body.classList.add('viewer-open');$('#viewerClose').focus();
+}
+function closeImageViewer(){
+  $('#imageViewer').hidden=true;document.body.classList.remove('viewer-open');$('#viewerImage').removeAttribute('src');
+  if(viewerReturnFocus?.isConnected)viewerReturnFocus.focus();
+}
+function moveViewer(step){viewerIndex=(viewerIndex+step+viewerImages.length)%viewerImages.length;showViewerImage()}
+$('#viewerClose').onclick=closeImageViewer;
+$('#viewerPrev').onclick=()=>moveViewer(-1);
+$('#viewerNext').onclick=()=>moveViewer(1);
+$('#viewerZoom').onclick=()=>{viewerZoomed=!viewerZoomed;$('#imageViewer').style.setProperty('--viewer-zoom',viewerZoomed?'2':'1');$('#viewerZoom').textContent=viewerZoomed?'Ajustar':'Ampliar +'};
+$('#imageViewer').addEventListener('click',e=>{if(e.target===$('#imageViewer')||e.target===$('#viewerStage'))closeImageViewer()});
+document.addEventListener('keydown',e=>{if($('#imageViewer').hidden)return;if(e.key==='Escape')closeImageViewer();if(e.key==='ArrowLeft')moveViewer(-1);if(e.key==='ArrowRight')moveViewer(1)});
+$('#portraitImg').addEventListener('click',()=>{if(data.portrait)openImageViewer([data.portrait])});
+$('#portraitImg').setAttribute('tabindex','0');$('#portraitImg').setAttribute('title','Pulsar para ver en grande');
+$('#portraitImg').addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&data.portrait){e.preventDefault();openImageViewer([data.portrait])}});
+// Delegación: también funciona con imágenes recién subidas o entradas redibujadas.
+document.addEventListener('click',e=>{
+  const img=e.target.closest('.journal-photo img');if(!img)return;
+  const gallery=img.closest('.journal-images');if(!gallery)return;
+  const images=[...gallery.querySelectorAll('.journal-photo img')];
+  openImageViewer(images.map(x=>x.src),images.indexOf(img));
+});
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter'&&e.key!==' ')return;
+  if(e.target.matches('.journal-photo img')){e.preventDefault();e.target.click()}
+});
+
+
+// Grupos y fichas de personajes: compatibles con el JSON de las versiones anteriores.
+function ensureCharacterGroups(){
+ if(!Array.isArray(data.characterGroups))data.characterGroups=[];
+ for(const [id,name] of [['cg-allies','Equipo / aliados'],['cg-others','Otros personajes']]){
+  if(!data.characterGroups.some(g=>g.id===id))data.characterGroups.unshift({id,name,characters:[]});
+ }
+ for(const group of data.characterGroups)if(!Array.isArray(group.characters))group.characters=[];
+}
+function newCharacterId(){return 'char-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8)}
+let draggedCharacter=null;
+function moveCharacter(personId,sourceId,targetId){
+ if(sourceId===targetId)return false;
+ const from=data.characterGroups.find(g=>g.id===sourceId),to=data.characterGroups.find(g=>g.id===targetId);
+ if(!from||!to)return false;
+ const idx=from.characters.findIndex(p=>p.id===personId);
+ if(idx<0)return false;
+ const [person]=from.characters.splice(idx,1);
+ to.characters.push(person);
+ persist();renderCharacters();return true;
+}
+function renderCharacters(){
+ ensureCharacterGroups();const root=$('#characterGroups');root.replaceChildren();
+ const query=($('#characterSearch').value||'').trim().toLocaleLowerCase();let matches=0,total=0;
+ data.characterGroups.forEach(group=>{
+  const outer=document.createElement('section');outer.className='card character-group';
+  outer.dataset.groupId=group.id;
+  outer.addEventListener('dragover',e=>{if(!draggedCharacter||draggedCharacter.sourceId===group.id)return;e.preventDefault();e.dataTransfer.dropEffect='move';outer.classList.add('drag-over')});
+  outer.addEventListener('dragleave',e=>{if(!outer.contains(e.relatedTarget))outer.classList.remove('drag-over')});
+  outer.addEventListener('drop',e=>{e.preventDefault();outer.classList.remove('drag-over');if(draggedCharacter){const {personId,sourceId}=draggedCharacter;draggedCharacter=null;moveCharacter(personId,sourceId,group.id)}});
+  const head=document.createElement('div');head.className='character-group-head';
+  const name=document.createElement('input');name.value=group.name||'';name.setAttribute('aria-label','Nombre del apartado');
+  name.oninput=()=>{group.name=name.value;persist()};
+  const add=document.createElement('button');add.className='gold';add.type='button';add.textContent='＋ Personaje';
+  add.onclick=()=>{const person={id:newCharacterId(),name:'Nuevo personaje',notes:'',image:'',collapsed:false};group.characters.push(person);$('#characterSearch').value='';renderCharacters();persist()};
+  head.append(name,add);
+  if(!['cg-allies','cg-others'].includes(group.id)){
+   const delGroup=document.createElement('button');delGroup.className='danger';delGroup.type='button';delGroup.textContent='Eliminar apartado';
+   delGroup.onclick=()=>{if(confirm('¿Eliminar «'+(group.name||'este apartado')+'» y todos sus personajes?')){data.characterGroups.splice(data.characterGroups.indexOf(group),1);renderCharacters();persist()}};head.append(delGroup);
+  }
+  const count=document.createElement('p');count.className='hint';count.textContent=group.characters.length+' personaje(s)';head.append(count);outer.append(head);
+  const shown=group.characters.filter(person=>{
+   total++;const haystack=(String(person.name||'')+' '+String(person.notes||'')+' '+String(person.rich_notes||'').replace(/<[^>]*>/g,' ')).toLocaleLowerCase();
+   return !query||haystack.includes(query);
+  });matches+=shown.length;
+  if(!shown.length){const empty=document.createElement('p');empty.className='character-empty';empty.textContent=query?'No hay coincidencias en este apartado.':'Todavía no hay personajes. Pulsa «＋ Personaje» para añadir uno.';outer.append(empty)}
+  shown.forEach(person=>{
+   const card=document.createElement('article');card.className='character-card';
+   const dragHandle=document.createElement('button');dragHandle.type='button';dragHandle.className='character-drag-handle';dragHandle.textContent='↕';dragHandle.title='Arrastrar este personaje a otro apartado';dragHandle.setAttribute('aria-label','Arrastrar '+(person.name||'personaje'));
+   dragHandle.draggable=true;
+   dragHandle.addEventListener('dragstart',e=>{draggedCharacter={personId:person.id,sourceId:group.id};e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',person.id);card.classList.add('dragging')});
+   dragHandle.addEventListener('dragend',()=>{draggedCharacter=null;document.querySelectorAll('.character-group.drag-over').forEach(el=>el.classList.remove('drag-over'));card.classList.remove('dragging')});
+   const heading=document.createElement('div');heading.className='character-head';
+   let thumb;
+   if(person.image){thumb=document.createElement('img');thumb.src=person.image;thumb.alt='Retrato de '+(person.name||'personaje');thumb.title='Ver imagen en grande';thumb.tabIndex=0;thumb.onclick=()=>openImageViewer([person.image]);thumb.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();thumb.click()}}}
+   else{thumb=document.createElement('div');thumb.className='character-thumb-empty';thumb.textContent='◈'}
+   thumb.classList.add('character-thumb');
+   const info=document.createElement('div');info.className='character-head-info';const title=document.createElement('strong');title.textContent=person.name||'Sin nombre';info.append(title);
+   const toggle=document.createElement('button');toggle.type='button';heading.append(dragHandle,thumb,info,toggle);card.append(heading);
+   const body=document.createElement('div');body.className='character-body';
+   const labelName=document.createElement('label');labelName.textContent='Nombre';const inputName=document.createElement('input');inputName.value=person.name||'';inputName.placeholder='Nombre del personaje';inputName.oninput=()=>{person.name=inputName.value;title.textContent=person.name||'Sin nombre';if(thumb.tagName==='IMG')thumb.alt='Retrato de '+person.name;persist()};body.append(labelName,inputName);
+   const imageLabel=document.createElement('label');imageLabel.textContent='Imagen';imageLabel.style.marginTop='12px';body.append(imageLabel);
+   if(person.image){const big=document.createElement('img');big.className='character-photo';big.src=person.image;big.alt='Retrato de '+(person.name||'personaje');big.title='Pulsar para ampliar';big.tabIndex=0;big.onclick=()=>openImageViewer([person.image]);big.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();big.click()}};body.append(big)}
+   const actions=document.createElement('div');actions.className='journal-actions';
+   const upload=document.createElement('label');upload.className='button';upload.textContent=person.image?'Cambiar imagen':'＋ Subir imagen';const file=document.createElement('input');file.type='file';file.accept='image/*';file.hidden=true;
+   file.onchange=async()=>{const f=file.files?.[0];if(!f)return;try{person.image=await compressJournalImage(f);renderCharacters();persist()}catch(e){alert('No se ha podido cargar la imagen. Prueba con JPG, PNG o WebP.')}};upload.append(file);actions.append(upload);
+   if(person.image){const removeImg=document.createElement('button');removeImg.type='button';removeImg.textContent='Quitar imagen';removeImg.onclick=()=>{person.image='';renderCharacters();persist()};actions.append(removeImg)}body.append(actions);
+   const notesLabel=document.createElement('label');notesLabel.textContent='Notas';notesLabel.style.marginTop='12px';body.append(notesLabel,addRich(person,'notes'));
+   const moveLine=document.createElement('div');moveLine.className='character-move-line';
+   const moveLabel=document.createElement('label');moveLabel.textContent='Mover a:';
+   const moveSelect=document.createElement('select');moveSelect.setAttribute('aria-label','Mover personaje a otro apartado');
+   const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent='Elegir apartado…';moveSelect.append(placeholder);
+   data.characterGroups.filter(g=>g.id!==group.id).forEach(g=>{const option=document.createElement('option');option.value=g.id;option.textContent=g.name||'Apartado sin nombre';moveSelect.append(option)});
+   moveSelect.onchange=()=>{if(moveSelect.value)moveCharacter(person.id,group.id,moveSelect.value)};
+   moveLine.append(moveLabel,moveSelect);body.append(moveLine);
+   const deleteBtn=document.createElement('button');deleteBtn.type='button';deleteBtn.className='danger';deleteBtn.textContent='Eliminar personaje';deleteBtn.onclick=()=>{if(confirm('¿Eliminar a «'+(person.name||'este personaje')+'»?')){group.characters.splice(group.characters.indexOf(person),1);renderCharacters();persist()}};body.append(deleteBtn);
+   const update=()=>{body.hidden=!!person.collapsed;toggle.textContent=person.collapsed?'▸ Mostrar':'▾ Ocultar';toggle.setAttribute('aria-expanded',String(!person.collapsed))};
+   toggle.onclick=()=>{person.collapsed=!person.collapsed;update();persist()};card.append(body);update();outer.append(card);
+  });root.append(outer);
+ });
+ $('#characterSearchStatus').textContent=query?matches+' coincidencia(s) de '+total+' personajes.':total+' personaje(s) en total.';
+}
+$('#addCharacterGroup').onclick=()=>{data.characterGroups.push({id:'cg-'+newCharacterId(),name:'Nuevo apartado',characters:[]});renderCharacters();persist()};
+$('#characterSearch').oninput=renderCharacters;
+$('#clearCharacterSearch').onclick=()=>{$('#characterSearch').value='';renderCharacters();$('#characterSearch').focus()};
+
+
+// Copias parciales de personajes: se fusionan sin sobrescribir información existente.
+function downloadJSON(payload,filename){const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500)}
+$('#exportCharacters').onclick=()=>{ensureCharacterGroups();downloadJSON({format:'mistborn-characters',version:1,exportedAt:new Date().toISOString(),groups:data.characterGroups},'mistborn-personajes.json');$('#charactersTransferMsg').textContent='Personajes exportados con imágenes y notas.'};
+$('#importCharacters').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{const obj=JSON.parse(await file.text());if(obj?.format!=='mistborn-characters'||!Array.isArray(obj.groups)||obj.groups.length>300)throw Error('El archivo no es una copia de personajes compatible.');const total=obj.groups.reduce((n,g)=>n+(Array.isArray(g.characters)?g.characters.length:0),0);if(total>3000)throw Error('Demasiados personajes en el archivo.');if(!confirm('¿Añadir '+total+' personaje(s) a esta ficha? No se borrará ninguno de los existentes.'))return;ensureCharacterGroups();let added=0,skipped=0;for(const incoming of obj.groups){if(!incoming||typeof incoming.name!=='string'||!Array.isArray(incoming.characters))continue;let target=data.characterGroups.find(g=>g.id===incoming.id)||data.characterGroups.find(g=>g.name.trim().toLowerCase()===incoming.name.trim().toLowerCase());if(!target){target={id:'cg-'+newCharacterId(),name:incoming.name||'Apartado importado',characters:[]};data.characterGroups.push(target)}for(const candidate of incoming.characters){if(!candidate||typeof candidate!=='object'||Array.isArray(candidate))continue;const check=(v)=>String(v||'');const duplicate=target.characters.some(p=>check(p.name)===check(candidate.name)&&check(p.notes)===check(candidate.notes)&&check(p.rich_notes)===check(candidate.rich_notes)&&check(p.image)===check(candidate.image));if(duplicate){skipped++;continue}target.characters.push({id:newCharacterId(),name:check(candidate.name),notes:check(candidate.notes),rich_notes:check(candidate.rich_notes),image:typeof candidate.image==='string'&&candidate.image.startsWith('data:image/')?candidate.image:'',collapsed:!!candidate.collapsed});added++}}renderCharacters();persist();$('#charactersTransferMsg').textContent='Importación completada: '+added+' añadidos, '+skipped+' coincidencias idénticas omitidas.'}catch(err){alert('No se pudieron importar los personajes: '+err.message)}finally{e.target.value=''}};
+function renderProfileSelector(){const select=$('#profileSelect');select.replaceChildren();profiles.forEach(p=>{const o=document.createElement('option');o.value=p.id;o.textContent=p.name;select.append(o)});select.value=activeProfileId;const current=profiles.find(p=>p.id===activeProfileId);$('#profileName').value=current?.name||'';}
+function switchProfile(id){if(id===activeProfileId)return;persist();const next=profiles.find(p=>p.id===id);if(!next)return;activeProfileId=id;data={...structuredClone(defaults),...structuredClone(next.sheet)};$('#characterSearch').value='';init();persist();renderProfileSelector();$('#profilesMsg').textContent='Perfil activo: '+next.name;}
+$('#profileSelect').onchange=e=>switchProfile(e.target.value);
+$('#newProfile').onclick=()=>{const name=prompt('Nombre de la nueva ficha:','Nueva ficha');if(name===null)return;persist();const p={id:profileId(),name:name.trim()||'Nueva ficha',sheet:structuredClone(defaults)};profiles.push(p);activeProfileId=p.id;data=structuredClone(p.sheet);$('#characterSearch').value='';init();persist();renderProfileSelector();$('#profilesMsg').textContent='Nueva ficha creada.'};
+$('#duplicateProfile').onclick=()=>{const name=prompt('Nombre de la copia:',(profiles.find(p=>p.id===activeProfileId)?.name||'Ficha')+' (copia)');if(name===null)return;persist();const p={id:profileId(),name:name.trim()||'Copia',sheet:structuredClone(data)};profiles.push(p);activeProfileId=p.id;data=structuredClone(p.sheet);init();persist();renderProfileSelector();$('#profilesMsg').textContent='Ficha duplicada.'};
+$('#renameProfile').onclick=()=>{const current=profiles.find(p=>p.id===activeProfileId);if(!current)return;const name=$('#profileName').value.trim();if(!name){alert('Introduce un nombre para el perfil.');return}current.name=name;persist();renderProfileSelector();$('#profilesMsg').textContent='Perfil renombrado.'};
+$('#deleteProfile').onclick=()=>{if(profiles.length<=1){alert('Debes conservar al menos un perfil.');return}const current=profiles.find(p=>p.id===activeProfileId);if(!confirm('¿Eliminar definitivamente el perfil «'+current.name+'» y todos sus datos de este navegador? Exporta una copia antes si quieres conservarlo.'))return;profiles=profiles.filter(p=>p.id!==activeProfileId);activeProfileId=profiles[0].id;data={...structuredClone(defaults),...structuredClone(profiles[0].sheet)};init();persist();renderProfileSelector();$('#profilesMsg').textContent='Perfil eliminado.'};
+function init(){bindFields();renderStats();renderSkills();renderList('weapons','#weapons',[['name','Nombre'],['damage','Daño / Damage'],['notes','Propiedades / notas',true]]);renderList('talents','#talents',[['name','Nombre'],['detail','Efectos / notas',true]]);renderResources();renderPortrait();renderJournal();renderCharacters();renderGoals();renderRules();upgradeStaticEditors();setupEditableLabels()}
+init();
+renderProfileSelector();
+// Migrar también al formato de perfiles aunque no haya cambios iniciales.
+persist();
+
+// DRIVE V12: client-side token, never stored; only client ID and file ID in localStorage.
+const CLOUD_NAME='mistborn-perfiles-sync-v12.json';
+const CLOUD_SCOPE='https://www.googleapis.com/auth/drive.file';
+const CLOUD_CLIENT_KEY='mistborn-drive-client-id-v12';
+const CLOUD_FILE_KEY='mistborn-drive-file-id-v12';
+let cloudToken='', cloudTokenExpiry=0, cloudTokenClient=null, cloudConnected=false;
+let cloudFileId=localStorage.getItem(CLOUD_FILE_KEY)||'', cloudRemoteHash='', cloudBusy=false;
+let cloudDirty=false, cloudTimer=null, cloudInitialising=false, cloudConflict=false;
+const cloudState=(message)=>{$('#driveState').textContent=message};
+$('#driveClientId').value=localStorage.getItem(CLOUD_CLIENT_KEY)||'';
+$('#driveClientId').onchange=()=>{localStorage.setItem(CLOUD_CLIENT_KEY,$('#driveClientId').value.trim())};
+const cloudSnapshot=()=>({format:'mistborn-all-profiles',version:12,profiles:structuredClone(profiles),activeProfileId,updatedAt:new Date().toISOString()});
+function scheduleCloud(){
+ if(!cloudConnected||cloudInitialising)return;
+ cloudDirty=true;
+ if(cloudConflict){cloudState('Conflicto pendiente: no se guardará en Drive hasta resolverlo. Conservamos los cambios locales.');return;}
+ clearTimeout(cloudTimer);
+ cloudTimer=setTimeout(()=>cloudSave(false),2500);
+}
+window.mistbornCloudChanged=scheduleCloud;
+async function googleApi(url,options={}){
+ const response=await fetch(url,{...options,headers:{Authorization:'Bearer '+cloudToken,...(options.headers||{})}});
+ if(!response.ok){let detail='';try{detail=(await response.json()).error?.message||''}catch(e){}
+  throw Error('Google Drive: '+response.status+(detail?' · '+detail:''));}
+ return response;
+}
+async function cloudInfo(id){const r=await googleApi('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(id)+'?fields=id,name,md5Checksum,modifiedTime&alt=json');return r.json()}
+async function cloudFind(){
+ const q="name = '"+CLOUD_NAME+"' and trashed = false";
+ const r=await googleApi('https://www.googleapis.com/drive/v3/files?fields=files(id,name,md5Checksum,modifiedTime),nextPageToken&page_size=100&q='+encodeURIComponent(q));
+ const v=await r.json();return (v.files||[]).sort((a,b)=>String(b.modifiedTime).localeCompare(String(a.modifiedTime)))[0]||null;
+}
+function applyCloudSnapshot(obj){
+ if(!obj||obj.format!=='mistborn-all-profiles'||!Array.isArray(obj.profiles)||!obj.profiles.length)throw Error('El archivo de Drive no es una copia de perfiles v12 válida');
+ const valid=obj.profiles.filter(p=>p&&typeof p.id==='string'&&p.sheet&&typeof p.sheet==='object');
+ if(!valid.length)throw Error('No hay perfiles válidos en Drive');
+ profiles=valid;activeProfileId=valid.some(p=>p.id===obj.activeProfileId)?obj.activeProfileId:valid[0].id;
+ data={...structuredClone(defaults),...structuredClone(profiles.find(p=>p.id===activeProfileId).sheet)};
+ $('#characterSearch').value='';cloudInitialising=true;init();renderProfileSelector();persist();cloudInitialising=false;
+ cloudDirty=false;
+}
+async function cloudRead(){
+ const r=await googleApi('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(cloudFileId)+'?alt=media');
+ const json=await r.json();applyCloudSnapshot(json);
+ const meta=await cloudInfo(cloudFileId);cloudRemoteHash=meta.md5Checksum||'';
+}
+async function cloudCreate(){
+ const boundary='mistborn_'+Date.now();
+ const body=new Blob(['--'+boundary+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify({name:CLOUD_NAME,mimeType:'application/json'})+'\r\n--'+boundary+'\r\nContent-Type: application/json\r\n\r\n'+JSON.stringify(cloudSnapshot())+'\r\n--'+boundary+'--'],{type:'multipart/related; boundary='+boundary});
+ const r=await googleApi('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,md5Checksum',{method:'POST',headers:{'Content-Type':'multipart/related; boundary='+boundary},body});
+ const obj=await r.json();cloudFileId=obj.id;cloudRemoteHash=obj.md5Checksum||'';localStorage.setItem(CLOUD_FILE_KEY,cloudFileId);cloudDirty=false;
+}
+async function cloudSave(manual){
+ if(!cloudConnected){if(manual)cloudState('Conecta Google Drive primero.');return;}
+ if(cloudConflict){cloudState('Hay un conflicto. Para proteger ambos cambios, exporta tu ficha local antes de recuperar la versión de Drive.');return;}
+ if(cloudBusy){cloudDirty=true;return;}
+ if(!cloudDirty&&!manual)return;
+ cloudBusy=true;clearTimeout(cloudTimer);
+ try{
+  if(Date.now()>cloudTokenExpiry-60000)throw Error('La sesión de Google caducó. Pulsa «Conectar Google Drive» para renovarla.');
+  const info=await cloudInfo(cloudFileId);
+  if(info.md5Checksum&&cloudRemoteHash&&info.md5Checksum!==cloudRemoteHash){
+   cloudConflict=true;cloudState('⚠ Drive cambió en otro dispositivo. No se sobrescribirá. Exporta la ficha local y vuelve a conectar para recuperar Drive.');return;
+  }
+  const snapshot=JSON.stringify(cloudSnapshot());
+  cloudDirty=false;
+  const r=await googleApi('https://www.googleapis.com/upload/drive/v3/files/'+encodeURIComponent(cloudFileId)+'?uploadType=media&fields=id,md5Checksum',{method:'PATCH',headers:{'Content-Type':'application/json'},body:snapshot});
+  const updated=await r.json();cloudRemoteHash=updated.md5Checksum||'';
+  cloudState('✓ Sincronizado con Google Drive · '+new Date().toLocaleTimeString('es-ES'));
+ }catch(e){cloudDirty=true;cloudState('No se ha podido sincronizar: '+e.message+' (los datos locales siguen guardados).');}
+ finally{cloudBusy=false;if(cloudDirty&&!cloudConflict&&Date.now()<cloudTokenExpiry-60000){clearTimeout(cloudTimer);cloudTimer=setTimeout(()=>cloudSave(false),10000)}}
+}
+async function cloudConnect(){
+ const clientId=$('#driveClientId').value.trim();
+ if(!/^\d+-[a-zA-Z0-9_-]+\.apps\.googleusercontent\.com$/.test(clientId)){cloudState('Introduce un ID de cliente OAuth válido de Google Cloud.');return}
+ if(location.protocol!=='https:'&&location.hostname!=='localhost'){cloudState('La autorización requiere una página HTTPS o localhost, no un HTML abierto desde el disco.');return}
+ if(!window.google?.accounts?.oauth2){cloudState('No se cargó Google Identity Services. Comprueba la conexión a Internet.');return}
+ localStorage.setItem(CLOUD_CLIENT_KEY,clientId);
+ cloudTokenClient=google.accounts.oauth2.initTokenClient({client_id:clientId,scope:CLOUD_SCOPE,callback:async response=>{
+  if(response.error){cloudState('Google no autorizó la conexión: '+response.error);return}
+  cloudToken=response.access_token;cloudTokenExpiry=Date.now()+(Number(response.expires_in)||3500)*1000;
+  cloudInitialising=true;cloudState('Conectado. Buscando copia en Drive…');
+  try{
+   let file=null;
+   if(cloudFileId){try{file=await cloudInfo(cloudFileId)}catch(e){cloudFileId='';localStorage.removeItem(CLOUD_FILE_KEY)}}
+   if(!file)file=await cloudFind();
+   if(file){cloudFileId=file.id;localStorage.setItem(CLOUD_FILE_KEY,cloudFileId);
+    if(cloudDirty&& !confirm('Tienes cambios locales pendientes. ¿Quieres recuperar Drive? Haz primero una exportación JSON si necesitas conservarlos.')){cloudState('Drive conectado, pero se conservaron los cambios locales. Sincronización detenida.');return}
+    await cloudRead();cloudConflict=false;cloudConnected=true;cloudState('✓ Ficha recuperada desde Google Drive. Sincronización activada.');
+   }else{
+    if(!confirm('No se encontró una copia de esta aplicación en Drive. ¿Crear una con todos los perfiles de este navegador?')){cloudState('Conexión cancelada sin cambios.');return}
+    await cloudCreate();cloudConnected=true;cloudConflict=false;cloudState('✓ Copia creada en Drive. Sincronización activada.');
+   }
+  }catch(e){cloudConnected=false;cloudState('Error al conectar: '+e.message)}finally{cloudInitialising=false}
+ }});
+ cloudTokenClient.requestAccessToken({prompt:'consent'});
+}
+$('#driveConnect').onclick=cloudConnect;
+$('#driveSync').onclick=()=>{cloudDirty=true;cloudSave(true)};
+$('#driveDisconnect').onclick=()=>{
+ clearTimeout(cloudTimer);const tokenToRevoke=cloudToken;cloudConnected=false;cloudToken='';cloudTokenExpiry=0;cloudConflict=false;
+ try{if(window.google?.accounts?.oauth2&&tokenToRevoke)google.accounts.oauth2.revoke(tokenToRevoke,()=>{})}catch(e){}
+ cloudState('Desconectado. Se conserva la copia local y el archivo en Drive.');
+};
+window.addEventListener('online',()=>{if(cloudConnected&&cloudDirty)cloudSave(false)});
+window.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&cloudConnected&&!cloudBusy&&!cloudDirty){cloudInfo(cloudFileId).then(info=>{if(cloudRemoteHash&&info.md5Checksum!==cloudRemoteHash){cloudConflict=true;cloudState('Drive tiene cambios más recientes. Pulsa «Conectar Google Drive» para recuperarlos; exporta primero cualquier cambio local.') }}).catch(()=>{})}});
+
+</script>
+</body></html>
