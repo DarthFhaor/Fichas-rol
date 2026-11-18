@@ -412,17 +412,14 @@ renderProfileSelector();
 // Migrar también al formato de perfiles aunque no haya cambios iniciales.
 persist();
 
-// DRIVE V12: client-side token, never stored; only client ID and file ID in localStorage.
-const CLOUD_NAME='mistborn-perfiles-sync-v12.json';
+// DRIVE V13: autorización OAuth por redirección y proxy seguro de Drive en Netlify.
+const CLOUD_NAME='mistborn-perfiles-sync-v13.json';
 const CLOUD_SCOPE='https://www.googleapis.com/auth/drive.file';
-const CLOUD_CLIENT_ID='799364070845-pqnidruj6bc9o9tm778m8oj9mokpeaq8.apps.googleusercontent.com';
-const CLOUD_FILE_KEY='mistborn-drive-file-id-v12';
-let cloudToken='', cloudTokenExpiry=0, cloudTokenClient=null, cloudConnected=false;
-let cloudFileId=localStorage.getItem(CLOUD_FILE_KEY)||'', cloudRemoteHash='', cloudBusy=false;
+const CLOUD_FILE_KEY='mistborn-drive-file-id-v13';
+let cloudConnected=false, cloudFileId=localStorage.getItem(CLOUD_FILE_KEY)||'', cloudRemoteHash='', cloudBusy=false;
 let cloudDirty=false, cloudTimer=null, cloudInitialising=false, cloudConflict=false;
 const cloudState=(message)=>{$('#driveState').textContent=message};
-$('#driveClientId').value=CLOUD_CLIENT_ID;
-const cloudSnapshot=()=>({format:'mistborn-all-profiles',version:12,profiles:structuredClone(profiles),activeProfileId,updatedAt:new Date().toISOString()});
+const cloudSnapshot=()=>({format:'mistborn-all-profiles',version:13,profiles:structuredClone(profiles),activeProfileId,updatedAt:new Date().toISOString()});
 function scheduleCloud(){
  if(!cloudConnected||cloudInitialising)return;
  cloudDirty=true;
@@ -432,8 +429,15 @@ function scheduleCloud(){
 }
 window.mistbornCloudChanged=scheduleCloud;
 async function googleApi(url,options={}){
- const response=await fetch(url,{...options,headers:{Authorization:'Bearer '+cloudToken,...(options.headers||{})}});
- if(!response.ok){let detail='';try{detail=(await response.json()).error?.message||''}catch(e){}
+ const target=new URL(url,'https://www.googleapis.com');
+ const path=target.pathname+target.search;
+ const headers={...(options.headers||{})};
+ delete headers.Authorization;delete headers.authorization;
+ const response=await fetch('/.netlify/functions/drive-api?path='+encodeURIComponent(path),{
+  method:options.method||'GET',headers,
+  ...(options.body!==undefined?{body:options.body}:{})
+ });
+ if(!response.ok){let detail='';try{detail=(await response.clone().json()).error?.message||''}catch(e){}
   throw Error('Google Drive: '+response.status+(detail?' · '+detail:''));}
  return response;
 }
@@ -444,7 +448,7 @@ async function cloudFind(){
  const v=await r.json();return (v.files||[]).sort((a,b)=>String(b.modifiedTime).localeCompare(String(a.modifiedTime)))[0]||null;
 }
 function applyCloudSnapshot(obj){
- if(!obj||obj.format!=='mistborn-all-profiles'||!Array.isArray(obj.profiles)||!obj.profiles.length)throw Error('El archivo de Drive no es una copia de perfiles v12 válida');
+ if(!obj||obj.format!=='mistborn-all-profiles'||!Array.isArray(obj.profiles)||!obj.profiles.length)throw Error('El archivo de Drive no es una copia de perfiles v13 válida');
  const valid=obj.profiles.filter(p=>p&&typeof p.id==='string'&&p.sheet&&typeof p.sheet==='object');
  if(!valid.length)throw Error('No hay perfiles válidos en Drive');
  profiles=valid;activeProfileId=valid.some(p=>p.id===obj.activeProfileId)?obj.activeProfileId:valid[0].id;
@@ -459,7 +463,7 @@ async function cloudRead(){
 }
 async function cloudCreate(){
  const boundary='mistborn_'+Date.now();
- const body=new Blob(['--'+boundary+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify({name:CLOUD_NAME,mimeType:'application/json'})+'\r\n--'+boundary+'\r\nContent-Type: application/json\r\n\r\n'+JSON.stringify(cloudSnapshot())+'\r\n--'+boundary+'--'],{type:'multipart/related; boundary='+boundary});
+ const body=new Blob(['--'+boundary+'\\r\\nContent-Type: application/json; charset=UTF-8\\r\\n\\r\\n'+JSON.stringify({name:CLOUD_NAME,mimeType:'application/json'})+'\\r\\n--'+boundary+'\\r\\nContent-Type: application/json\\r\\n\\r\\n'+JSON.stringify(cloudSnapshot())+'\\r\\n--'+boundary+'--'],{type:'multipart/related; boundary='+boundary});
  const r=await googleApi('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,md5Checksum',{method:'POST',headers:{'Content-Type':'multipart/related; boundary='+boundary},body});
  const obj=await r.json();cloudFileId=obj.id;cloudRemoteHash=obj.md5Checksum||'';localStorage.setItem(CLOUD_FILE_KEY,cloudFileId);cloudDirty=false;
 }
@@ -470,85 +474,53 @@ async function cloudSave(manual){
  if(!cloudDirty&&!manual)return;
  cloudBusy=true;clearTimeout(cloudTimer);
  try{
-  if(Date.now()>cloudTokenExpiry-60000)throw Error('La sesión de Google caducó. Pulsa «Conectar Google Drive» para renovarla.');
   const info=await cloudInfo(cloudFileId);
   if(info.md5Checksum&&cloudRemoteHash&&info.md5Checksum!==cloudRemoteHash){
    cloudConflict=true;cloudState('⚠ Drive cambió en otro dispositivo. No se sobrescribirá. Exporta la ficha local y vuelve a conectar para recuperar Drive.');return;
   }
-  const snapshot=JSON.stringify(cloudSnapshot());
-  cloudDirty=false;
+  const snapshot=JSON.stringify(cloudSnapshot());cloudDirty=false;
   const r=await googleApi('https://www.googleapis.com/upload/drive/v3/files/'+encodeURIComponent(cloudFileId)+'?uploadType=media&fields=id,md5Checksum',{method:'PATCH',headers:{'Content-Type':'application/json'},body:snapshot});
   const updated=await r.json();cloudRemoteHash=updated.md5Checksum||'';
   cloudState('✓ Sincronizado con Google Drive · '+new Date().toLocaleTimeString('es-ES'));
  }catch(e){cloudDirty=true;cloudState('No se ha podido sincronizar: '+e.message+' (los datos locales siguen guardados).');}
- finally{cloudBusy=false;if(cloudDirty&&!cloudConflict&&Date.now()<cloudTokenExpiry-60000){clearTimeout(cloudTimer);cloudTimer=setTimeout(()=>cloudSave(false),10000)}}
+ finally{cloudBusy=false;if(cloudDirty&&!cloudConflict){clearTimeout(cloudTimer);cloudTimer=setTimeout(()=>cloudSave(false),10000)}}
 }
-let cloudAuthTimer=null, cloudAuthPending=false;
 async function cloudConnect(){
- const clientId=CLOUD_CLIENT_ID;
- if(cloudAuthPending){cloudState('La ventana de autorización de Google ya está abierta.');return}
- if(!/^\d+-[a-zA-Z0-9_-]+\.apps\.googleusercontent\.com$/.test(clientId)){cloudState('El ID de cliente OAuth no tiene un formato válido.');return}
- if(location.protocol!=='https:'&&location.hostname!=='localhost'){cloudState('La autorización requiere una página HTTPS o localhost, no un HTML abierto desde el disco.');return}
- if(!window.google?.accounts?.oauth2){cloudState('No se ha cargado Google Identity Services. Comprueba tu conexión y recarga la página.');return}
- cloudAuthPending=true;
- cloudState('Abriendo la autorización de Google… Si no aparece la ventana, permite las ventanas emergentes de darthfhaor.github.io.');
- const finishAuth=()=>{cloudAuthPending=false;clearTimeout(cloudAuthTimer);cloudAuthTimer=null};
- try{
-  cloudTokenClient=google.accounts.oauth2.initTokenClient({
-   client_id:clientId,
-   scope:CLOUD_SCOPE,
-   callback:async response=>{
-    finishAuth();
-    if(!response||response.error||!response.access_token){
-     cloudState('Google no ha concedido acceso'+(response?.error?': '+response.error:'. No se recibió ningún token. Vuelve a intentarlo y comprueba que tu cuenta figura como usuario de prueba.'));
-     return;
-    }
-    cloudToken=response.access_token;
-    cloudTokenExpiry=Date.now()+(Number(response.expires_in)||3500)*1000;
-    cloudInitialising=true;
-    cloudState('Autorización recibida. Buscando tu copia en Google Drive…');
-    try{
-     let file=null;
-     if(cloudFileId){try{file=await cloudInfo(cloudFileId)}catch(e){cloudFileId='';localStorage.removeItem(CLOUD_FILE_KEY)}}
-     if(!file)file=await cloudFind();
-     if(file){
-      cloudFileId=file.id;localStorage.setItem(CLOUD_FILE_KEY,cloudFileId);
-      if(cloudDirty&&!confirm('Tienes cambios locales pendientes. ¿Quieres recuperar Drive? Haz primero una exportación JSON si necesitas conservarlos.')){cloudState('Drive autorizado, pero se conservaron los cambios locales. Sincronización detenida.');return}
-      await cloudRead();cloudConflict=false;cloudConnected=true;cloudState('✓ Ficha recuperada desde Google Drive. Sincronización activada.');
-     }else{
-      if(!confirm('No se encontró una copia de esta aplicación en Drive. ¿Crear una con todos los perfiles de este navegador?')){cloudState('Conexión cancelada sin cambios.');return}
-      await cloudCreate();cloudConnected=true;cloudConflict=false;cloudState('✓ Copia creada en Drive. Sincronización activada.');
-     }
-    }catch(e){cloudConnected=false;cloudState('Autorización correcta, pero ha fallado el acceso a Drive: '+(e?.message||String(e)))}
-    finally{cloudInitialising=false}
-   },
-   error_callback:error=>{
-    console.error('Google Identity Services OAuth error:',error);
-    finishAuth();
-    const reason=error?.type||'desconocido';
-    if(reason==='popup_closed')cloudState('Se cerró la ventana de Google antes de terminar la autorización. Pulsa «Conectar Google Drive» y completa el permiso.');
-    else if(reason==='popup_failed_to_open')cloudState('Chrome ha bloqueado la ventana de Google. Permite las ventanas emergentes para darthfhaor.github.io y vuelve a pulsar conectar.');
-    else cloudState('No se pudo abrir la autorización de Google ('+reason+'). Comprueba los bloqueadores y vuelve a intentarlo.');
-   }
-  });
-  cloudAuthTimer=setTimeout(()=>{
-   if(cloudAuthPending){finishAuth();cloudState('Google no respondió a la autorización. Comprueba si Chrome bloqueó la ventana emergente o las cookies y vuelve a intentarlo.');}
-  },90000);
-  cloudTokenClient.requestAccessToken({prompt:'consent'});
- }catch(e){
-  finishAuth();
-  cloudState('No se pudo iniciar la autorización de Google: '+(e?.message||String(e)));
- }
+ cloudState('Redirigiendo a Google para autorizar Google Drive…');
+ location.href='/.netlify/functions/oauth-start';
 }
 $('#driveConnect').onclick=cloudConnect;
 $('#driveSync').onclick=()=>{cloudDirty=true;cloudSave(true)};
-$('#driveDisconnect').onclick=()=>{
- clearTimeout(cloudTimer);const tokenToRevoke=cloudToken;cloudConnected=false;cloudToken='';cloudTokenExpiry=0;cloudConflict=false;
- try{if(window.google?.accounts?.oauth2&&tokenToRevoke)google.accounts.oauth2.revoke(tokenToRevoke,()=>{})}catch(e){}
+$('#driveDisconnect').onclick=async()=>{
+ clearTimeout(cloudTimer);cloudConnected=false;cloudConflict=false;
+ try{await fetch('/.netlify/functions/oauth-logout',{method:'POST'})}catch(e){}
  cloudState('Desconectado. Se conserva la copia local y el archivo en Drive.');
 };
+async function cloudRestoreSession(){
+ try{
+  const r=await fetch('/.netlify/functions/drive-status');
+  if(!r.ok)return;
+  const status=await r.json();
+  if(!status.connected)return;
+  cloudConnected=true;cloudInitialising=true;
+  cloudState('Google Drive autorizado. Buscando tu copia…');
+  let file=null;
+  if(cloudFileId){try{file=await cloudInfo(cloudFileId)}catch(e){cloudFileId='';localStorage.removeItem(CLOUD_FILE_KEY)}}
+  if(!file)file=await cloudFind();
+  if(file){
+   cloudFileId=file.id;localStorage.setItem(CLOUD_FILE_KEY,cloudFileId);
+   await cloudRead();cloudConflict=false;cloudState('✓ Ficha recuperada desde Google Drive. Sincronización activada.');
+  }else{
+   if(confirm('No se encontró una copia de esta aplicación en Drive. ¿Crear una con todos los perfiles de este navegador?')){
+    await cloudCreate();cloudConnected=true;cloudConflict=false;cloudState('✓ Copia creada en Drive. Sincronización activada.');
+   }else{cloudConnected=false;cloudState('Drive autorizado, pero no se creó ninguna copia. Los datos locales se conservan.')}
+  }
+ }catch(e){cloudConnected=false;cloudState('No se ha podido acceder a Drive: '+(e?.message||String(e))+' (los datos locales siguen guardados).')}
+ finally{cloudInitialising=false}
+}
+cloudRestoreSession();
 window.addEventListener('online',()=>{if(cloudConnected&&cloudDirty)cloudSave(false)});
-window.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&cloudConnected&&!cloudBusy&&!cloudDirty){cloudInfo(cloudFileId).then(info=>{if(cloudRemoteHash&&info.md5Checksum!==cloudRemoteHash){cloudConflict=true;cloudState('Drive tiene cambios más recientes. Pulsa «Conectar Google Drive» para recuperarlos; exporta primero cualquier cambio local.') }}).catch(()=>{})}});
+window.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&cloudConnected&&!cloudBusy&&!cloudDirty){cloudInfo(cloudFileId).then(info=>{if(cloudRemoteHash&&info.md5Checksum!==cloudRemoteHash){cloudConflict=true;cloudState('Drive tiene cambios más recientes. Exporta primero cualquier cambio local antes de recuperarlos.') }}).catch(()=>{})}});cloudState('Drive tiene cambios más recientes. Pulsa «Conectar Google Drive» para recuperarlos; exporta primero cualquier cambio local.') }}).catch(()=>{})}});
 
 </script>
 </body></html>
