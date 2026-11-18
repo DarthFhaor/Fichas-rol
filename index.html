@@ -523,6 +523,7 @@ async function cloudConnect(){
     finally{cloudInitialising=false}
    },
    error_callback:error=>{
+    console.error('Google Identity Services OAuth error:',error);
     finishAuth();
     const reason=error?.type||'desconocido';
     if(reason==='popup_closed')cloudState('Se cerró la ventana de Google antes de terminar la autorización. Pulsa «Conectar Google Drive» y completa el permiso.');
