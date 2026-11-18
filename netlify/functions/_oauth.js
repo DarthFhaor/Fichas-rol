@@ -41,9 +41,9 @@ function unseal(value) {
   } catch (_) { return null; }
 }
 function redirect(location, cookies = []) {
-  return { statusCode: 302, headers: { Location: location, "Cache-Control": "no-store", ...(cookies.length ? { "Set-Cookie": cookies } : {}) }, body: "" };
+  return { statusCode: 302, headers: { Location: location, "Cache-Control": "no-store" }, ...(cookies.length ? { multiValueHeaders: { "Set-Cookie": cookies } } : {}), body: "" };
 }
 function json(statusCode, data, cookies = []) {
-  return { statusCode, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", ...(cookies.length ? { "Set-Cookie": cookies } : {}) }, body: JSON.stringify(data) };
+  return { statusCode, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" }, ...(cookies.length ? { multiValueHeaders: { "Set-Cookie": cookies } } : {}), body: JSON.stringify(data) };
 }
 module.exports = { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, COOKIE, cookieValue, sessionCookie, clearSessionCookie, seal, unseal, redirect, json };
