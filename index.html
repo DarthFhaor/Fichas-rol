@@ -440,7 +440,7 @@ async function googleApi(url,options={}){
 async function cloudInfo(id){const r=await googleApi('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(id)+'?fields=id,name,md5Checksum,modifiedTime&alt=json');return r.json()}
 async function cloudFind(){
  const q="name = '"+CLOUD_NAME+"' and trashed = false";
- const r=await googleApi('https://www.googleapis.com/drive/v3/files?fields=files(id,name,md5Checksum,modifiedTime),nextPageToken&page_size=100&q='+encodeURIComponent(q));
+ const r=await googleApi('https://www.googleapis.com/drive/v3/files?fields=files(id,name,md5Checksum,modifiedTime),nextPageToken&pageSize=100&q='+encodeURIComponent(q));
  const v=await r.json();return (v.files||[]).sort((a,b)=>String(b.modifiedTime).localeCompare(String(a.modifiedTime)))[0]||null;
 }
 function applyCloudSnapshot(obj){
@@ -483,29 +483,61 @@ async function cloudSave(manual){
  }catch(e){cloudDirty=true;cloudState('No se ha podido sincronizar: '+e.message+' (los datos locales siguen guardados).');}
  finally{cloudBusy=false;if(cloudDirty&&!cloudConflict&&Date.now()<cloudTokenExpiry-60000){clearTimeout(cloudTimer);cloudTimer=setTimeout(()=>cloudSave(false),10000)}}
 }
+let cloudAuthTimer=null, cloudAuthPending=false;
 async function cloudConnect(){
  const clientId=CLOUD_CLIENT_ID;
- if(!/^\d+-[a-zA-Z0-9_-]+\.apps\.googleusercontent\.com$/.test(clientId)){cloudState('Introduce un ID de cliente OAuth válido de Google Cloud.');return}
+ if(cloudAuthPending){cloudState('La ventana de autorización de Google ya está abierta.');return}
+ if(!/^\d+-[a-zA-Z0-9_-]+\.apps\.googleusercontent\.com$/.test(clientId)){cloudState('El ID de cliente OAuth no tiene un formato válido.');return}
  if(location.protocol!=='https:'&&location.hostname!=='localhost'){cloudState('La autorización requiere una página HTTPS o localhost, no un HTML abierto desde el disco.');return}
- if(!window.google?.accounts?.oauth2){cloudState('No se cargó Google Identity Services. Comprueba la conexión a Internet.');return}
- cloudTokenClient=google.accounts.oauth2.initTokenClient({client_id:clientId,scope:CLOUD_SCOPE,callback:async response=>{
-  if(response.error){cloudState('Google no autorizó la conexión: '+response.error);return}
-  cloudToken=response.access_token;cloudTokenExpiry=Date.now()+(Number(response.expires_in)||3500)*1000;
-  cloudInitialising=true;cloudState('Conectado. Buscando copia en Drive…');
-  try{
-   let file=null;
-   if(cloudFileId){try{file=await cloudInfo(cloudFileId)}catch(e){cloudFileId='';localStorage.removeItem(CLOUD_FILE_KEY)}}
-   if(!file)file=await cloudFind();
-   if(file){cloudFileId=file.id;localStorage.setItem(CLOUD_FILE_KEY,cloudFileId);
-    if(cloudDirty&& !confirm('Tienes cambios locales pendientes. ¿Quieres recuperar Drive? Haz primero una exportación JSON si necesitas conservarlos.')){cloudState('Drive conectado, pero se conservaron los cambios locales. Sincronización detenida.');return}
-    await cloudRead();cloudConflict=false;cloudConnected=true;cloudState('✓ Ficha recuperada desde Google Drive. Sincronización activada.');
-   }else{
-    if(!confirm('No se encontró una copia de esta aplicación en Drive. ¿Crear una con todos los perfiles de este navegador?')){cloudState('Conexión cancelada sin cambios.');return}
-    await cloudCreate();cloudConnected=true;cloudConflict=false;cloudState('✓ Copia creada en Drive. Sincronización activada.');
+ if(!window.google?.accounts?.oauth2){cloudState('No se ha cargado Google Identity Services. Comprueba tu conexión y recarga la página.');return}
+ cloudAuthPending=true;
+ cloudState('Abriendo la autorización de Google… Si no aparece la ventana, permite las ventanas emergentes de darthfhaor.github.io.');
+ const finishAuth=()=>{cloudAuthPending=false;clearTimeout(cloudAuthTimer);cloudAuthTimer=null};
+ try{
+  cloudTokenClient=google.accounts.oauth2.initTokenClient({
+   client_id:clientId,
+   scope:CLOUD_SCOPE,
+   callback:async response=>{
+    finishAuth();
+    if(!response||response.error||!response.access_token){
+     cloudState('Google no ha concedido acceso'+(response?.error?': '+response.error:'. No se recibió ningún token. Vuelve a intentarlo y comprueba que tu cuenta figura como usuario de prueba.'));
+     return;
+    }
+    cloudToken=response.access_token;
+    cloudTokenExpiry=Date.now()+(Number(response.expires_in)||3500)*1000;
+    cloudInitialising=true;
+    cloudState('Autorización recibida. Buscando tu copia en Google Drive…');
+    try{
+     let file=null;
+     if(cloudFileId){try{file=await cloudInfo(cloudFileId)}catch(e){cloudFileId='';localStorage.removeItem(CLOUD_FILE_KEY)}}
+     if(!file)file=await cloudFind();
+     if(file){
+      cloudFileId=file.id;localStorage.setItem(CLOUD_FILE_KEY,cloudFileId);
+      if(cloudDirty&&!confirm('Tienes cambios locales pendientes. ¿Quieres recuperar Drive? Haz primero una exportación JSON si necesitas conservarlos.')){cloudState('Drive autorizado, pero se conservaron los cambios locales. Sincronización detenida.');return}
+      await cloudRead();cloudConflict=false;cloudConnected=true;cloudState('✓ Ficha recuperada desde Google Drive. Sincronización activada.');
+     }else{
+      if(!confirm('No se encontró una copia de esta aplicación en Drive. ¿Crear una con todos los perfiles de este navegador?')){cloudState('Conexión cancelada sin cambios.');return}
+      await cloudCreate();cloudConnected=true;cloudConflict=false;cloudState('✓ Copia creada en Drive. Sincronización activada.');
+     }
+    }catch(e){cloudConnected=false;cloudState('Autorización correcta, pero ha fallado el acceso a Drive: '+(e?.message||String(e)))}
+    finally{cloudInitialising=false}
+   },
+   error_callback:error=>{
+    finishAuth();
+    const reason=error?.type||'desconocido';
+    if(reason==='popup_closed')cloudState('Se cerró la ventana de Google antes de terminar la autorización. Pulsa «Conectar Google Drive» y completa el permiso.');
+    else if(reason==='popup_failed_to_open')cloudState('Chrome ha bloqueado la ventana de Google. Permite las ventanas emergentes para darthfhaor.github.io y vuelve a pulsar conectar.');
+    else cloudState('No se pudo abrir la autorización de Google ('+reason+'). Comprueba los bloqueadores y vuelve a intentarlo.');
    }
-  }catch(e){cloudConnected=false;cloudState('Error al conectar: '+e.message)}finally{cloudInitialising=false}
- }});
- cloudTokenClient.requestAccessToken({prompt:'consent'});
+  });
+  cloudAuthTimer=setTimeout(()=>{
+   if(cloudAuthPending){finishAuth();cloudState('Google no respondió a la autorización. Comprueba si Chrome bloqueó la ventana emergente o las cookies y vuelve a intentarlo.');}
+  },90000);
+  cloudTokenClient.requestAccessToken({prompt:'consent'});
+ }catch(e){
+  finishAuth();
+  cloudState('No se pudo iniciar la autorización de Google: '+(e?.message||String(e)));
+ }
 }
 $('#driveConnect').onclick=cloudConnect;
 $('#driveSync').onclick=()=>{cloudDirty=true;cloudSave(true)};
