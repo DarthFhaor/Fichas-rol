@@ -413,9 +413,9 @@ renderProfileSelector();
 persist();
 
 // DRIVE V13: autorización OAuth por redirección y proxy seguro de Drive en Netlify.
-const CLOUD_NAME='mistborn-perfiles-sync-v13.json';
+const CLOUD_NAME='mistborn-perfiles-sync-v12.json';
 const CLOUD_SCOPE='https://www.googleapis.com/auth/drive.file';
-const CLOUD_FILE_KEY='mistborn-drive-file-id-v13';
+const CLOUD_FILE_KEY='mistborn-drive-file-id-v12';
 let cloudConnected=false, cloudFileId=localStorage.getItem(CLOUD_FILE_KEY)||'', cloudRemoteHash='', cloudBusy=false;
 let cloudDirty=false, cloudTimer=null, cloudInitialising=false, cloudConflict=false;
 const cloudState=(message)=>{$('#driveState').textContent=message};
