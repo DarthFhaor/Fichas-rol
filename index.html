@@ -520,7 +520,7 @@ async function cloudRestoreSession(){
 }
 cloudRestoreSession();
 window.addEventListener('online',()=>{if(cloudConnected&&cloudDirty)cloudSave(false)});
-window.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&cloudConnected&&!cloudBusy&&!cloudDirty){cloudInfo(cloudFileId).then(info=>{if(cloudRemoteHash&&info.md5Checksum!==cloudRemoteHash){cloudConflict=true;cloudState('Drive tiene cambios más recientes. Exporta primero cualquier cambio local antes de recuperarlos.') }}).catch(()=>{})}});cloudState('Drive tiene cambios más recientes. Pulsa «Conectar Google Drive» para recuperarlos; exporta primero cualquier cambio local.') }}).catch(()=>{})}});
+window.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&cloudConnected&&!cloudBusy&&!cloudDirty){cloudInfo(cloudFileId).then(info=>{if(cloudRemoteHash&&info.md5Checksum!==cloudRemoteHash){cloudConflict=true;cloudState('Drive tiene cambios más recientes. Exporta primero cualquier cambio local antes de recuperarlos.')}}).catch(()=>{})}});
 
 </script>
 </body></html>
