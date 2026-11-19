@@ -441,7 +441,7 @@ async function googleApi(url,options={}){
   throw Error('Google Drive: '+response.status+(detail?' · '+detail:''));}
  return response;
 }
-async function cloudInfo(id){const r=await googleApi('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(id)+'?fields=id,name,md5Checksum,modifiedTime&alt=json');return r.json()}
+async function cloudInfo(id){const r=await googleApi('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(id)+'?fields=id,name,size,md5Checksum,modifiedTime&alt=json');return r.json()}
 async function cloudFind(){
  const q="name = '"+CLOUD_NAME+"' and trashed = false";
  const r=await googleApi('https://www.googleapis.com/drive/v3/files?fields=files(id,name,md5Checksum,modifiedTime),nextPageToken&pageSize=100&q='+encodeURIComponent(q));
@@ -457,9 +457,28 @@ function applyCloudSnapshot(obj){
  cloudDirty=false;
 }
 async function cloudRead(){
- const r=await googleApi('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(cloudFileId)+'?alt=media');
- const json=await r.json();applyCloudSnapshot(json);
- const meta=await cloudInfo(cloudFileId);cloudRemoteHash=meta.md5Checksum||'';
+ const base='https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(cloudFileId)+'?alt=media';
+ const meta=await cloudInfo(cloudFileId);
+ const total=Number(meta.size||0);
+ let raw='';
+ if(total>0){
+  const chunkSize=1024*1024;
+  const parts=[];
+  for(let start=0;start<total;start+=chunkSize){
+   const end=Math.min(total-1,start+chunkSize-1);
+   const part=await googleApi(base,{headers:{Range:'bytes='+start+'-'+end}});
+   if(part.status!==206&&total>6*1024*1024)throw Error('Google Drive no permite descargar esta copia por fragmentos (HTTP '+part.status+'). El archivo no se ha modificado.');
+   parts.push(await part.arrayBuffer());
+  }
+  const blob=new Blob(parts,{type:'application/json'});
+  raw=await blob.text();
+ }else{
+  const response=await googleApi(base);
+  raw=await response.text();
+ }
+ const snapshot=JSON.parse(raw);
+ applyCloudSnapshot(snapshot);
+ cloudRemoteHash=meta.md5Checksum||'';
 }
 async function cloudCreate(){
  const boundary='mistborn_'+Date.now();
