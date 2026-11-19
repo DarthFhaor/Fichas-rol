@@ -27,7 +27,7 @@ exports.handler = async (event) => {
     const method = event.httpMethod || "GET";
     const headers = {};
     for (const [name, value] of Object.entries(event.headers || {})) {
-      if (["content-type", "content-length"].includes(name.toLowerCase())) headers[name] = value;
+      if (["content-type", "content-length", "range"].includes(name.toLowerCase())) headers[name] = value;
     }
     headers.Authorization = "Bearer " + token.access_token;
     const body = event.body ? (event.isBase64Encoded ? Buffer.from(event.body, "base64") : event.body) : undefined;
