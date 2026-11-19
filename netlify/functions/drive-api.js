@@ -32,6 +32,22 @@ exports.handler = async (event) => {
     headers.Authorization = "Bearer " + token.access_token;
     const body = event.body ? (event.isBase64Encoded ? Buffer.from(event.body, "base64") : event.body) : undefined;
     const upstream = await fetch("https://www.googleapis.com" + path, { method, headers, ...(body !== undefined ? { body } : {}) });
+    if ((event.queryStringParameters || {}).diagnostic === "1" && path.includes("alt=media")) {
+      const raw = await upstream.text();
+      let summary = { upstreamStatus: upstream.status, contentType: upstream.headers.get("content-type") || "" };
+      if (upstream.ok) {
+        try {
+          const snapshot = JSON.parse(raw);
+          summary = { ...summary, validJson: true, topLevelKeys: Object.keys(snapshot || {}).slice(0, 20),
+            format: snapshot && snapshot.format || null, version: snapshot && snapshot.version || null,
+            profilesCount: Array.isArray(snapshot && snapshot.profiles) ? snapshot.profiles.length : null,
+            firstProfileHasSheet: !!(snapshot && snapshot.profiles && snapshot.profiles[0] && snapshot.profiles[0].sheet) };
+        } catch (_) { summary.validJson = false; }
+      } else {
+        summary.googleError = raw.slice(0, 1000);
+      }
+      return json(upstream.status, summary);
+    }
     const bytes = Buffer.from(await upstream.arrayBuffer());
     const responseHeaders = {
       "Content-Type": upstream.headers.get("content-type") || "application/octet-stream",
