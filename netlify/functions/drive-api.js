@@ -8,6 +8,7 @@ exports.handler = async (event) => {
   if (!path.startsWith("/drive/v3/files") && !path.startsWith("/upload/drive/v3/files")) {
     return json(400, { error: { message: "Ruta de Google Drive no permitida." } });
   }
+  let stage = "renovación del token de Google";
   try {
     const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
       method: "POST",
@@ -22,6 +23,7 @@ exports.handler = async (event) => {
       console.error("Google refresh failed:", token.error || tokenResponse.status);
       return json(401, { error: { message: "La autorización de Google ha caducado o ha sido revocada. Desconecta y vuelve a conectar Drive." } });
     }
+    stage = "consulta a la API de Google Drive";
     const method = event.httpMethod || "GET";
     const headers = {};
     for (const [name, value] of Object.entries(event.headers || {})) {
@@ -44,7 +46,7 @@ exports.handler = async (event) => {
     }
     return output;
   } catch (error) {
-    console.error("Drive proxy failed:", error.message);
-    return json(502, { error: { message: "No se pudo contactar con Google Drive." } });
+    console.error("Drive proxy failed at " + stage + ":", error && error.stack ? error.stack : error);
+    return json(502, { error: { message: "Fallo durante " + stage + ": " + (error && error.message ? error.message : String(error)) } });
   }
 };
